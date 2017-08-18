@@ -1,0 +1,571 @@
+2c2
+<  * prlRead2path.c
+---
+>  * 63mer/prlRead2path.c
+4c4
+<  * Copyright (c) 2008-2012 BGI-Shenzhen <soap at genomics dot org dot cn>. 
+---
+>  * Copyright (c) 2008-2010 BGI-Shenzhen <soap at genomics dot org dot cn>. 
+25d24
+< #include "kmerhash.h"
+30,32d28
+< #ifdef MER127
+< static const Kmer kmerZero = { 0, 0, 0, 0 };
+< #else
+34d29
+< #endif
+40c35
+< static unsigned char *markerOnEdge;		//edge occured times for each edge
+---
+> static unsigned char *markerOnEdge;
+50,51c45,46
+< static Kmer *mixBuffer;	//kmer buffer; after searching,  mixBuffer[j].low = node->l_links;  'node->l_links'
+< static boolean *flagArray;	//indicate each item in mixBuffer whether it's a (K+1)mer
+---
+> static Kmer *mixBuffer;
+> static boolean *flagArray;	//indicate each item in mixBuffer where it's a (K+1)mer
+58c53
+< static kmer_t **nodeBuffer;		//kmer_t buffer  related to 'kmerBuffer'
+---
+> static kmer_t **nodeBuffer;
+62c57
+< static int *deletion;				//read deletion number for each thread
+---
+> static int *deletion;
+70a66,67
+> static int FOUNDREAD = 0;	//lzy 1128
+> 
+78a76,77
+> static FILE *pathFP = NULL;	//lzy 1109
+> 
+89c88
+< 			fprintf (stderr,"Create threads failed.\n");
+---
+> 			printf ("create threads failed\n");
+94c93
+< 	fprintf (stderr,"%d thread(s) initialized.\n", thrd_num);
+---
+> 	printf ("%d thread created\n", thrd_num);
+161,185d159
+< #ifdef MER127
+< 				for (j = start; j < finish; j++)
+< 				{
+< 					if (flagArray[j] == 0)
+< 					{
+< 						if (mixBuffer[j].low2 == 0)
+< 						{
+< 							break;
+< 						}
+< 					}
+< 					else if (hashBanBuffer[j] % thrd_num == id)
+< 					{
+< 						//fprintf(stderr,"thread %d search for ban %lld\n",id,hashBanBuffer[j]);
+< 						search1kmerPlus (j, id);
+< 					}
+< 
+< 					/*
+< 					   if(flagArray[j]==0&&mixBuffer[j]==0)
+< 					   break;
+< 					   if(!flagArray[j]||(hashBanBuffer[j]%thrd_num)!=id)
+< 					   continue;
+< 					   search1kmerPlus(j,id);
+< 					 */
+< 				}
+< #else
+209d182
+< #endif
+221,236d193
+< #ifdef MER127
+< 				for (j = start; j < finish - 1; j++)
+< 				{
+< 					if (mixBuffer[j].low2 == 0 || mixBuffer[j + 1].low2 == 0)
+< 					{
+< 						break;
+< 					}
+< 
+< 					if (mixBuffer[j].low2 % thrd_num != id)
+< 					{
+< 						continue;
+< 					}
+< 
+< 					thread_add1preArc (mixBuffer[j].low2, mixBuffer[j + 1].low2, id);
+< 				}
+< #else
+251d207
+< #endif
+276,284d231
+< #ifdef MER127
+< 	word = kmerZero;
+< 
+< 	for (index = 0; index < overlaplen; index++)
+< 	{
+< 		word = KmerLeftBitMoveBy2 (word);
+< 		word.low2 |= src_seq[index];
+< 	}
+< #else
+292d238
+< #endif
+350,359c296
+< 		fprintf (stderr,"SearchKmer: kmer ");
+< 		PrintKmer(stderr, kmerBuffer[t]);
+< 		fprintf (stderr," is not found.\n");
+< 		/*
+< #ifdef MER127
+< 		fprintf (stderr,"searchKmer: kmer %llx %llx %llx %llx is not found\n", kmerBuffer[t].high1, kmerBuffer[t].low1, kmerBuffer[t].high2, kmerBuffer[t].low2);
+< #else
+< 		fprintf (stderr,"searchKmer: kmer %llx %llx is not found\n", kmerBuffer[t].high, kmerBuffer[t].low);
+< #endif
+< 		*/
+---
+> 		printf ("searchKmer: kmer %llx %llx is not found\n", kmerBuffer[t].high, kmerBuffer[t].low);
+472c409
+< //		fprintf (stderr,"%lld marker(s) counted.\n", markCounter);
+---
+> 		printf ("%lld markers counted\n", markCounter);
+476c413,414
+< static void recordPathBin (FILE * outfp)
+---
+> //static void recordPathBin (FILE * outfp)
+> static long long recordPathBin (FILE * outfp)
+479a418
+> 	long long path_num = 0;	//lzy 1109
+486,510d424
+< #ifdef MER127
+< 		if (finish - start < 3 || mixBuffer[start].low2 == 0 || mixBuffer[start + 1].low2 == 0 || mixBuffer[start + 2].low2 == 0)
+< 		{
+< 			continue;
+< 		}
+< 		
+< 		counter = 0;
+< 		
+< 		for (j = start; j < finish; j++)
+< 		{
+< 			if (mixBuffer[j].low2 == 0)
+< 			{
+< 				break;
+< 			}
+< 
+< 			fwriteBuf[counter++] = (unsigned int) mixBuffer[j].low2;
+< 
+< 			if (markerOnEdge[mixBuffer[j].low2] < 255)
+< 			{
+< 				markerOnEdge[mixBuffer[j].low2]++;
+< 			}
+< 
+< 			markCounter++;
+< 		}
+< #else
+515a430
+> 		path_num++;	//lzy 1109
+532a448,460
+> /*//lzy 1128
+> if (mixBuffer[j].low == 10)
+> {
+> 	FOUNDREAD = 1;
+> 	int k;
+> 	fprintf(stderr, "found one read\n");
+> 	for (k=0; k<lenBuffer[t]; k++)
+> 	{
+> 		fprintf(stderr,"%c",int2base((int)(seqBuffer[t][k])));
+> 	}
+> 	fprintf(stderr, "\n");
+> }
+> */
+534d461
+< #endif
+535a463,474
+> /*//lzy 1128
+> if (FOUNDREAD == 1)
+> {
+> 	fprintf (stderr, "%d\t", counter);
+> 	for (j=start; j<start+counter; j++)
+> 	{
+> 		fprintf (stderr, "%u\t", mixBuffer[j].low);
+> 	}
+> 	fprintf (stderr, "\n");
+> 	FOUNDREAD = 0;
+> }
+> */
+537a477,489
+> 
+> 		if (counter > maxPathLen)
+> 		{
+> 			maxPathLen = counter;
+> 		}
+> //<<lzy 1109
+> 		fprintf (pathFP, "%d", counter);
+> 		for (j =0; j < counter; j++)
+> 		{
+> 			fprintf (pathFP, " %u", fwriteBuf[j]);
+> 		}
+> 		fprintf (pathFP, "\n");
+> //>>
+538a491,492
+> 
+> 	return path_num;
+541,553d494
+< /*************************************************
+< Function:
+< 	search1kmerPlus
+< Description:
+< 	Searchs (k+1) kmer in hashset.
+< Input:
+< 	1. j:			(k+1) mer's  index
+< 	2. thrdID:	thread id
+< Output:
+< 	None.
+< Return:
+< 	None.
+< *************************************************/
+569,578d509
+< #ifdef MER127
+< 	if (smallerBuffer[j])
+< 	{
+< 		mixBuffer[j].low2 = node->l_links;
+< 	}
+< 	else
+< 	{
+< 		mixBuffer[j].low2 = node->l_links + node->twin - 1;
+< 	}
+< #else
+587d517
+< #endif
+593a524,525
+> 	unsigned int prev_edge = 0;		//lzy 1125
+> 	int new_edge = 0;		//lzy 1219
+599a532
+> 	boolean doubleBranch = 0;		//lzy 1125
+610a544
+> //			|| (prev_edge !=0 && prev_edge != mixBuffer[pos].low && 
+615a550,553
+> 				prev_edge = 0;		//lzy 1125
+> 				IsPrevKmer = 0;		//lzy 1125
+> 				doubleBranch = 0;	//lzy 1125
+> 				new_edge = 0;		//lzy 1219
+638c576
+< #ifdef MER127
+---
+> /*<<lzy 1125
+642c580
+< 				mixBuffer[pos].low2 = edge_index;
+---
+> 				mixBuffer[pos].low = edge_index;
+644a583
+> 
+646c585
+< 			else if (edge_index != mixBuffer[pos - 1].low2)
+---
+> 			else if (edge_index != mixBuffer[pos - 1].low)
+649c588
+< 				mixBuffer[pos].low2 = edge_index;
+---
+> 				mixBuffer[pos].low = edge_index;
+652,653c591,593
+< #else
+< 			if (retain == 0 || IsPrevKmer)
+---
+> >>*/
+> //<<lzy 1125
+> 			if (prev_edge != 0)
+655,658c595,636
+< 				retain++;
+< 				mixBuffer[pos].low = edge_index;
+< 				flagArray[pos++] = 0;
+< 				IsPrevKmer = 0;
+---
+> 				if (prev_edge == edge_index)
+> 				{
+> //lzy 1219					if (retain == 0 || prev_edge != mixBuffer[pos -1].low)
+> 					if (retain == 0 || prev_edge != mixBuffer[pos -1].low || new_edge == 1)	//lzy 1219
+> 					{ //already have two kmers in new edge "edge_index"
+> 						retain++;
+> 						mixBuffer[pos].low = edge_index;
+> 						flagArray[pos++] = 0;
+> 
+> 						new_edge = 0;		//lzy 1219
+> /*
+> if (edge_index == 10)
+> {
+> 	int k;
+> 	fprintf(stderr, "found one read\n");
+> 	for (k=0; k<lenBuffer[t]; k++)
+> 	{
+> 		fprintf(stderr,"%c",int2base((int)(seqBuffer[t][k])));
+> 	}
+> 	fprintf(stderr, "\n");
+> 	FOUNDREAD = 1;
+> }
+> */
+> 					}
+> 				}
+> 				else if (retain > 0 && prev_edge != mixBuffer[pos -1].low)
+> 				{ //only one kmer in prev_edge which may be an error
+> 					if (retain < 2)
+> 					{
+> 						retain = 0;
+> 						pos = start;
+> 						prev_edge = 0;		
+> 						IsPrevKmer = 0;		
+> 						doubleBranch = 0;
+> 						new_edge = 0;		//lzy 1219
+> 						continue;
+> 					}
+> 					else
+> 					{
+> 						break;
+> 					}
+> 				}
+660c638
+< 			else if (edge_index != mixBuffer[pos - 1].low)
+---
+> 			else if (node->checked == 1)
+664a643,644
+> 
+> 				new_edge = 0;		//lzy 1219
+666c646,649
+< #endif
+---
+> 			IsPrevKmer = 0;			
+> 			prev_edge = edge_index;		
+> 			doubleBranch = 0;
+> //>>
+699a683,684
+> 				doubleBranch = 1;
+> //				prev_edge = 0;
+701a687
+> 			prev_edge = 0;
+703a690
+> 			new_edge = 1;
+726c713
+< 		fprintf (stderr,"Read %d, %d vs %d.\n", t, retain, edge_index - start);
+---
+> 		printf ("read %d, %d vs %d\n", t, retain, edge_index - start);
+733a721,734
+> /*
+> //lzy 1128
+> if (FOUNDREAD == 1)
+> {
+> 	fprintf (stderr, "%d\t", retain);
+> 	for (j=start; j<pos; j++)
+> 	{
+> 		fprintf (stderr, "%u\t", mixBuffer[j].low);
+> 	}
+> 	fprintf (stderr, "\n");
+> 	FOUNDREAD = 0;
+> }
+> */
+> 
+762,774d762
+< /*************************************************
+< Function: 
+< 	prlRead2edge
+< Description: 
+< 	Maps the reads to edges and builds pre-arcs between edges.
+< Input: 
+< 	1. libfile:		the reads config file 
+< 	2. outfile:		the output file prefix
+< Output:
+< 	None.
+< Return:
+< 	None.
+< *************************************************/
+780c768,769
+< 
+---
+> 	
+> 	pathCount = 0;	//lzy 1109
+790d778
+< 	//init
+802c790,791
+< 	fprintf (stderr,"In file: %s, max seq len %d, max name len %d.\n", libfile, maxReadLen, maxNameLen);
+---
+> 	printf ("In file: %s, max seq len %d, max name len %d\n\n", libfile, maxReadLen, maxNameLen);
+> 	maxPathLen = maxReadLen - overlaplen + 1;
+807a797,799
+> 
+> 		sprintf (name, "%s.pathR", outfile);
+> 		pathFP = ckopen (name, "w");
+830a823
+> 
+895c888
+< 		while (openNextFile (&libNo, pairs, asm_ctg))
+---
+> 	while (openNextFile (&libNo, pairs, asm_ctg))
+916c909
+< 					fprintf (stderr,"--- %lldth reads.\n", i);
+---
+> 					printf ("--- %lldth reads\n", i);
+939c932
+< 					sendWorkSignal (2, thrdSignal); //chopKmer4read
+---
+> 					sendWorkSignal (2, thrdSignal);
+943c936
+< 					sendWorkSignal (1, thrdSignal); //searchKmer
+---
+> 					sendWorkSignal (1, thrdSignal);
+947c940
+< 					sendWorkSignal (3, thrdSignal);//parse1read
+---
+> 					sendWorkSignal (3, thrdSignal);
+951c944
+< 					sendWorkSignal (4, thrdSignal);//search1kmerPlus
+---
+> 					sendWorkSignal (4, thrdSignal);
+955c948
+< 					sendWorkSignal (6, thrdSignal);//thread_add1preArc
+---
+> 					sendWorkSignal (6, thrdSignal);
+963c956,957
+< 						recordPathBin (outfp);
+---
+> //						recordPathBin (outfp);
+> 						pathCount += recordPathBin (outfp);
+999c993
+< 							fprintf (stderr,"--- %lldth reads.\n", i);
+---
+> 							printf ("--- %lldth reads\n", i);
+1015c1009
+< 							sendWorkSignal (2, thrdSignal); //chopKmer4read
+---
+> 							sendWorkSignal (2, thrdSignal);
+1019c1013
+< 							sendWorkSignal (1, thrdSignal); //searchKmer
+---
+> 							sendWorkSignal (1, thrdSignal);
+1023c1017
+< 							sendWorkSignal (3, thrdSignal);//parse1read
+---
+> 							sendWorkSignal (3, thrdSignal);
+1027c1021
+< 							sendWorkSignal (4, thrdSignal);//search1kmerPlus
+---
+> 							sendWorkSignal (4, thrdSignal);
+1031c1025
+< 							sendWorkSignal (6, thrdSignal);//thread_add1preArc
+---
+> 							sendWorkSignal (6, thrdSignal);
+1038c1032,1033
+< 								recordPathBin (outfp);
+---
+> //								recordPathBin (outfp);
+> 								pathCount += recordPathBin (outfp);
+1053c1048
+< 							fprintf (stderr,"--- %lldth reads.\n", i);
+---
+> 							printf ("--- %lldth reads\n", i);
+1071c1066
+< 							sendWorkSignal (2, thrdSignal); //chopKmer4read
+---
+> 							sendWorkSignal (2, thrdSignal);
+1075c1070
+< 							sendWorkSignal (1, thrdSignal); //searchKmer
+---
+> 							sendWorkSignal (1, thrdSignal);
+1079c1074
+< 							sendWorkSignal (3, thrdSignal);//parse1read
+---
+> 							sendWorkSignal (3, thrdSignal);
+1083c1078
+< 							sendWorkSignal (4, thrdSignal);//search1kmerPlus
+---
+> 							sendWorkSignal (4, thrdSignal);
+1087c1082
+< 							sendWorkSignal (6, thrdSignal);//thread_add1preArc
+---
+> 							sendWorkSignal (6, thrdSignal);
+1094c1089,1090
+< 								recordPathBin (outfp);
+---
+> //								recordPathBin (outfp);
+> 								pathCount += recordPathBin (outfp);
+1122c1118
+< 						fprintf (stderr,"--- %lldth reads.\n", i);
+---
+> 						printf ("--- %lldth reads\n", i);
+1136c1132
+< 					sendWorkSignal (2, thrdSignal); //chopKmer4read
+---
+> 					sendWorkSignal (2, thrdSignal);
+1140c1136
+< 					sendWorkSignal (1, thrdSignal); //searchKmer
+---
+> 					sendWorkSignal (1, thrdSignal);
+1144c1140
+< 					sendWorkSignal (3, thrdSignal);//parse1read
+---
+> 					sendWorkSignal (3, thrdSignal);
+1148c1144
+< 					sendWorkSignal (4, thrdSignal);//search1kmerPlus
+---
+> 					sendWorkSignal (4, thrdSignal);
+1152c1148
+< 					sendWorkSignal (6, thrdSignal);//thread_add1preArc
+---
+> 					sendWorkSignal (6, thrdSignal);
+1159c1155,1156
+< 						recordPathBin (outfp);
+---
+> //						recordPathBin (outfp);
+> 						pathCount += recordPathBin (outfp);
+1173,1182c1170,1171
+< 	fprintf (stderr,"%lld read(s) processed.\n", i);
+< //	fprintf (stderr,"Time ReadingReads: %d,chopKmer4read: %d,searchKmer: %d,parse1read: %d,search1kmerPlus: %d,thread_add1preArc: %d,recordPathBin: %d\n", t0, t1, t2, t3, t4, t5, t6);
+< 	fprintf (stderr,"Time spent on:\n");
+< 	fprintf (stderr," importing reads: %ds,\n", t0);
+< 	fprintf (stderr," chopping reads to kmers: %ds,\n", t1);
+< 	fprintf (stderr," searching kmers: %ds,\n", t2);
+< 	fprintf (stderr," aligning reads to edges: %ds,\n", t3);
+< 	fprintf (stderr," searching (K+1)mers: %ds,\n", t4);
+< 	fprintf (stderr," adding pre-arcs: %ds,\n", t5);
+< 	fprintf (stderr," recording read paths: %ds.\n", t6);
+---
+> 	printf ("%lld reads processed\n", i);
+> 	printf ("time %d,%d,%d,%d,%d,%d,%d\n", t0, t1, t2, t3, t4, t5, t6);
+1187,1191c1176,1180
+< 		sendWorkSignal (2, thrdSignal); //chopKmer4read
+< 		sendWorkSignal (1, thrdSignal); //searchKmer
+< 		sendWorkSignal (3, thrdSignal);//parse1read
+< 		sendWorkSignal (4, thrdSignal);//search1kmerPlus
+< 		sendWorkSignal (6, thrdSignal);//thread_add1preArc
+---
+> 		sendWorkSignal (2, thrdSignal);
+> 		sendWorkSignal (1, thrdSignal);
+> 		sendWorkSignal (3, thrdSignal);
+> 		sendWorkSignal (4, thrdSignal);
+> 		sendWorkSignal (6, thrdSignal);
+1196c1185,1186
+< 			recordPathBin (outfp);
+---
+> //			recordPathBin (outfp);
+> 			pathCount += recordPathBin (outfp);
+1200,1201c1190,1200
+< 	fprintf (stderr,"%lld marker(s) output.\n", markCounter);
+< 	sendWorkSignal (5, thrdSignal);	//over
+---
+> 	printf ("%lld markers outputed\n", markCounter);
+> 	if (repsTie)
+> 	{
+> //<<lzy 1110
+> 		sprintf (name, "%s.preGraphBasic", outfile);
+> 		FILE *fp = ckopen (name, "w");
+> 		fprintf (fp, "NODE %lld\n\n", markCounter);
+> 		fclose (fp);
+> 	}
+> //>>
+> 	sendWorkSignal (5, thrdSignal);
+1225c1224
+< 	fprintf (stderr,"Reads alignment done, %d read(s) deleted, %lld pre-arc(s) added.\n", deletion[0], arcCounter);
+---
+> 	printf ("done mapping reads, %d reads deleted, %lld arcs created\n", deletion[0], arcCounter);
+1228a1228,1234
+> //<<lzy 1110
+> 		sprintf (name, "%s.preGraphBasic", outfile);
+> 		FILE *fp = ckopen (name, "a");
+> 		fprintf (fp, "PATH %lld\n\nLONGEST %d\n\n", pathCount, maxPathLen);
+> 		fclose (fp);
+> 		printf ("%lld read paths\n", pathCount);	
+> //>>
+1260a1267
+> 
+1263a1271
+> 		fclose (pathFP);	//lzy 1109

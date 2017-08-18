@@ -1,0 +1,35 @@
+
+Installation of SOAPdenovo-V2.04
+
+Ruibang Luo, 2012-7-10
+Zhenyu Li, 2012-7-10
+
+********************************************************************
+
+Pre-configurated Makefile was designed to handle most circumstances.
+
+************
+MAKE
+************
+
+Type "sh make.sh"  at root of unpacked folder to get both 63mer and 
+127mer versions.
+
+Type "make" or "make 63mer=1" at root of unpacked folder to get 63mer
+ version only.
+
+Type "make 127mer=1" at root of unpacked folder to get 127mer version
+ only.
+
+************
+CLEAN
+************
+
+Type "sh makeclean.sh" at root of unpacked folder to clean both 63mer
+ and 127mer version.
+
+Type "make clean" or "make 63mer=1 clean" at root of unpacked folder 
+to clean 63mer version only.
+
+Type "make 127mer=1 clean" at root of unpacked folder to clean 127mer
+ version only.
