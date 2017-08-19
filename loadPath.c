@@ -495,9 +495,9 @@ boolean loadPathBinLR (char *graphfile, double cvg_cutoff_cef, int path_weight_c
 	readPath = (READPATH *) ckalloc ((readPathNum+1-uselessReadPath) * sizeof (READPATH));
 	edgesInReadPaths = (unsigned int *) ckalloc ((edgeInPathNum-uselessEdgeInReadPath) * sizeof (unsigned int));
 
-	//      fclose (fp);
-	//      fp = ckopen (name, "rb");
-	fseek (fp, 0, SEEK_SET);
+	fclose (fp);
+	fp = ckopen (name, "rb");
+	//fseek (fp, 0, SEEK_SET);
 	while (fread (&ch, sizeof (int), 1, fp) == 1)
 	{
 		//printf("%s",line);

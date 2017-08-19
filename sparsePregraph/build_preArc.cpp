@@ -1226,7 +1226,9 @@ void output_edge_path_buffer ( struct edge_path_buffer *buffer, FILE *path_file 
     for ( size_t i = 0; i < buffer->filled_num; i++ )
     {
         counter = tmp[i][0];
-        fwrite ( &counter, sizeof ( char ), 1, path_file );
+        //GLD modify :
+        //fwrite ( &counter, sizeof ( char ), 1, path_file );
+        fwrite ( &counter, sizeof ( int ), 1, path_file );
         fwrite ( tmp[i] + 1, sizeof ( unsigned int ), ( int ) counter, path_file );
     }
 
@@ -1269,7 +1271,9 @@ void output_edge_path_buffer_locked ( struct edge_path_buffer *buffer, FILE *pat
     for ( size_t i = 0; i < buffer->filled_num; i++ )
     {
         counter = tmp[i][0];
-        fwrite ( &counter, sizeof ( char ), 1, path_file );
+        //GLD modify :
+        //fwrite ( &counter, sizeof ( char ), 1, path_file );
+        fwrite ( &counter, sizeof ( int ), 1, path_file );
         fwrite ( tmp[i] + 1, sizeof ( unsigned int ), ( int ) counter, path_file );
     }
 
