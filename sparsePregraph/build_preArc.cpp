@@ -1315,7 +1315,9 @@ int put_path_2_buffer ( struct edge_path_buffer *buffer, unsigned int *path )
 
     memcpy ( ( buffer->path_buffer ) [pos], path, buffer->max_path_length * sizeof ( unsigned int ) );
 
-    for ( unsigned int i = 1; i < path[0]; i++ )
+    // GLD modify :
+    //for ( unsigned int i = 1; i < path[0]; i++ )
+    for ( unsigned int i = 1; i <= path[0]; i++ )
     {
         pthread_spin_lock ( ( buffer->locks ) + path[i] );
         ( ( buffer->mark_on_edge ) [path[i]] ) ++;
