@@ -1836,9 +1836,10 @@ static int cmp_seq ( const void * a, const void * b )
 					{ return -1; }
 			}
 
-			if ( i == A->length && i < B->length )
+            //GLD modify:
+			if ( (i == A->length || A->length == 0) && i < B->length )
 				{ return -1; }
-			else if ( i < A->length && i ==  B->length )
+			else if ( i < A->length && ( B->length == 0 ||i ==  B->length) )
 				{ return 1; }
 			else
 			{
