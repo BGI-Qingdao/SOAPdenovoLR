@@ -97,7 +97,8 @@ void build_vertexes ( vertex_hash2 *v_ht, int K_size, char *edge_file )
     bool bal_ed;//回文为0
     const int BUFF_LEN = 1024;
     char line[BUFF_LEN];
-    char str[32];
+    //GLD delete:
+    //char str[32];
     char to_buff[BUFF_LEN];//buffer 2k edge seq  BUFF_LEN>4*K_size
     int processed = 0; //0表示未处理 1表示 处理完毕 2 表示已经处理了from_vertex ,to_vertex 还没有处理
     size_t edge_id = 0;
@@ -123,15 +124,15 @@ void build_vertexes ( vertex_hash2 *v_ht, int K_size, char *edge_file )
             {
                 edge_id++;//如果不是回文
             }
-
+//GLD modify : format as same.
 #ifdef _63MER_
-            sscanf ( line + 7, "%d,%llx %llx ,%llx %llx ,%s %d,%d", &edge_len,
-                    & ( from_kmer.kmer ) [0], & ( from_kmer.kmer ) [1], & ( to_kmer.kmer ) [0], & ( to_kmer.kmer ) [1], str, &cvg, &bal_ed ); // from_kmer to_kmer is of no use here
+            sscanf ( line, ">length %d,%llx %llx,%llx %llx,cvg %d,%d\n", &edge_len,
+                    & ( from_kmer.kmer ) [0], & ( from_kmer.kmer ) [1], & ( to_kmer.kmer ) [0], & ( to_kmer.kmer ) [1], &cvg, &bal_ed ); // from_kmer to_kmer is of no use here
 #endif
 #ifdef _127MER_
-            sscanf ( line + 7, "%d,%llx %llx %llx %llx ,%llx %llx %llx %llx ,%s %d,%d", &edge_len,
+            sscanf ( line, ">length %d,%llx %llx %llx %llx,%llx %llx %llx %llx,cvg %d,%d\n", &edge_len,
                     & ( from_kmer.kmer ) [0], & ( from_kmer.kmer ) [1], & ( from_kmer.kmer ) [2], & ( from_kmer.kmer ) [3],
-                    & ( to_kmer.kmer ) [0], & ( to_kmer.kmer ) [1], & ( to_kmer.kmer ) [2], & ( to_kmer.kmer ) [3], str, &cvg, &bal_ed ); // from_kmer to_kmer is of no use here
+                    & ( to_kmer.kmer ) [0], & ( to_kmer.kmer ) [1], & ( to_kmer.kmer ) [2], & ( to_kmer.kmer ) [3], &cvg, &bal_ed ); // from_kmer to_kmer is of no use here
 #endif
             edge_len_left = K_size + edge_len;
             processed = 0;
