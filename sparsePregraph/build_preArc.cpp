@@ -717,6 +717,46 @@ void free_vertex_hash ( vertex_hash2 *v_ht )
 
     free ( v_ht->store_pos );
 }
+/*************************************************
+Function:
+put_1_path
+Description:
+    put 1 path that verified by 1 read (or part of
+    1 read) into buffer.
+
+1. valid counter of path array.
+2. the path array of valid edge.
+3. the job thread id.
+
+Output:
+None.
+Return:
+None.
+**************************************************/
+
+static void put_1_path( unsigned int counter , unsigned int *path ,int thread_id){
+    //GLD modify :
+    if ( counter >= 3 && counter <= 100 )
+    {
+        path[0] = counter;
+        int tmp = is_full ( path_buffer[thread_id] );
+
+        if ( tmp == 1 )
+        {
+            //output it
+            output_edge_path_buffer_locked ( path_buffer[thread_id], path_fp, &file_lock );
+        }
+        else if ( tmp == -1 )
+        {
+            //error status
+            fprintf ( stderr, "ERROR: path buffer overflow!! system exit .\n" );
+            exit ( -1 );
+        }
+
+        put_path_2_buffer ( path_buffer[thread_id],  path );
+    }
+}
+
 
 /*************************************************
 Function:
@@ -964,11 +1004,15 @@ void process_1read_preArc ( preArc_array *arc_arr, pthread_spinlock_t *locks, in
                     }
                     else
                     {
+                        //GLD modify :
+                        put_1_path(counter,path,thread_id);
+                        counter = 0;
+
                         path[++counter] = left_id;
                         path[++counter] = right_id;
                     }
                 }
-            }
+                }
 
             //end ...
             left_found = 0;
@@ -979,6 +1023,7 @@ void process_1read_preArc ( preArc_array *arc_arr, pthread_spinlock_t *locks, in
     //add to path buffer , if full filled ,output it
     if ( solve )
     {
+        /*
         if ( counter >= 3 && counter <= 100 )
         {
             path[0] = counter;
@@ -997,7 +1042,8 @@ void process_1read_preArc ( preArc_array *arc_arr, pthread_spinlock_t *locks, in
             }
 
             put_path_2_buffer ( path_buffer[thread_id],  path );
-        }
+        }*/
+        put_1_path(counter,path,thread_id);
     }
 }
 
