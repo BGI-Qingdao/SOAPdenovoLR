@@ -1006,13 +1006,13 @@ void process_1read_preArc ( preArc_array *arc_arr, pthread_spinlock_t *locks, in
                     {
                         //GLD modify :
                         put_1_path(counter,path,thread_id);
-                        counter = 0;
+                        counter = 0 ;
 
                         path[++counter] = left_id;
                         path[++counter] = right_id;
                     }
                 }
-                }
+            }
 
             //end ...
             left_found = 0;
