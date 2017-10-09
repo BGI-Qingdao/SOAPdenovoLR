@@ -126,11 +126,11 @@ void build_vertexes ( vertex_hash2 *v_ht, int K_size, char *edge_file )
             }
 //GLD modify : format as same.
 #ifdef _63MER_
-            sscanf ( line, ">length %d,%llX %llX,%llX %llX,cvg %d,%d\n", &edge_len,
+            sscanf ( line, ">length %d,%llx %llx,%llx %llx,cvg %d,%d\n", &edge_len,
                     & ( from_kmer.kmer ) [0], & ( from_kmer.kmer ) [1], & ( to_kmer.kmer ) [0], & ( to_kmer.kmer ) [1], &cvg, &bal_ed ); // from_kmer to_kmer is of no use here
 #endif
 #ifdef _127MER_
-            sscanf ( line, ">length %d,%llX %llX %llX %llX,%llX %llX %llX %llX,cvg %d,%d\n", &edge_len,
+            sscanf ( line, ">length %d,%llx %llx %llx %llx,%llx %llx %llx %llx,cvg %d,%d\n", &edge_len,
                     & ( from_kmer.kmer ) [0], & ( from_kmer.kmer ) [1], & ( from_kmer.kmer ) [2], & ( from_kmer.kmer ) [3],
                     & ( to_kmer.kmer ) [0], & ( to_kmer.kmer ) [1], & ( to_kmer.kmer ) [2], & ( to_kmer.kmer ) [3], &cvg, &bal_ed ); // from_kmer to_kmer is of no use here
 #endif
