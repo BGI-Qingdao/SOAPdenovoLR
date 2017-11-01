@@ -7,7 +7,7 @@
 #include "fibHeap.h"
 #include "darray.h"
 #include "zlib.h"
-
+#include <stdlib.h>
 #define CNBLOCKSIZE 10000
 #define MAXC 10000
 #define MAXCinBetween 200
@@ -3468,7 +3468,7 @@ void ScafStat ( int len_cut, char * graphfile )
 	if ( known_genome_size )
 	{
 		fprintf ( fo, "NG50\t%ld\t%ld\n", N50_known, Num_N50_known );
-		fprintf ( fo, "N50_scaffold-NG50_scaffold_length_difference\t%ld\n", abs ( N50 - N50_known ) );
+		fprintf ( fo, "N50_scaffold-NG50_scaffold_length_difference\t%ld\n", labs ( N50 - N50_known ) );
 	}
 	else
 	{
@@ -3780,7 +3780,7 @@ void ScafStat ( int len_cut, char * graphfile )
 	if ( known_genome_size )
 	{
 		fprintf ( fo, "NG50\t%ld\t%ld\n", N50_known, Num_N50_known );
-		fprintf ( fo, "N50_contig-NG50_contig_length_difference\t%ld\n", abs ( N50 - N50_known ) );
+		fprintf ( fo, "N50_contig-NG50_contig_length_difference\t%ld\n", labs ( N50 - N50_known ) );
 	}
 	else
 	{

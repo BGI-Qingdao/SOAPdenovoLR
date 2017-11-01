@@ -28,7 +28,7 @@
 #include "extfunc.h"
 #include "extvab.h"
 //#include "subhash.h"
-
+#include <stdlib.h>
 static int anchor_edge_num = 0;	 // qualitified anchor edge number
 static long long int edge_num_in_all_path = 0;
 static unsigned int *anchorEdgeArr;
@@ -1089,7 +1089,7 @@ static void mergePath (char *graphfile, int path_weight_cutoff, FILE * pathSeq_f
 	for (i = 1; i <= num_ed; i++)
 	{
 		entity = NULL;
-	        subGraph = NULL;
+	    subGraph = NULL;
 
 		if (edge_array[i].flag == 1)
 		{
@@ -1894,8 +1894,8 @@ static int rmOneBranch (pathUNIT** subGraph, int center, unsigned int target_edg
 			continue;
 		}
 
-		absReadId = abs(readId);
-		if (target_readId != 0 && absReadId != abs(target_readId))
+		absReadId = labs(readId);
+		if (target_readId != 0 && absReadId != labs(target_readId))
 		{
 			continue;
 		}
@@ -2101,116 +2101,12 @@ fprintf (stderr, "rm: edge %u, multi %d\n", block[j].edgeId, block[j].weight);
 		{
 			edgesInReadPaths[start] = 0;
 		}
-#ifdef DEBUG
-//if (absReadId == 185398 || absReadId == 64305333)
-if (edgeno==150937 || edgeno==22065690 || edgeno==54477379 || absReadId==29934737 || absReadId==34901404)
-{
-	fprintf (stderr, "read %lld deleted in rmOneBranch\n", absReadId);
-}
-#endif
 		markers[i] = 0;
 
 		return del_count;
 	}
 
 	return 0;
-/*
-		else
-		{
-			readId = abs(readId);
-			start = readPath[readId].start;
-			end = readPath[readId].end;
-
-			for (idx = start; idx < end; idx++)
-			{
-				if (edgesInReadPaths[idx] == bal_target && edgesInReadPaths[idx+target_pos-center] == bal_edgeno
-					|| (idx - start > target_pos))	//lzy 0514
-				{
-					break;
-				}
-			}
-
-//			if (idx == end)
-			if (idx == end || idx - start > target_pos)	//lzy 0514
-			{
-				continue;
-			}
-//<<lzy 1208
-			pre_edgeId = edgesInReadPaths[start++];
-			for ( ; start < end; start++)
-			{
-				arc = getArcBetween (pre_edgeId, edgesInReadPaths[start]);
-				if (arc != NULL)
-				{
-					arc->multiplicity--;
-					if (arc->multiplicity == 0)
-					{
-fprintf (stderr, "dead arc: %u->%u\n", pre_edgeId, edgesInReadPaths[start]);
-						arc->to_ed = 0;
-					}
-				}
-				arc = getArcBetween (getTwinEdge (edgesInReadPaths[start]), getTwinEdge (pre_edgeId));
-				if (arc != NULL)
-				{
-					arc->multiplicity--;
-					if (arc->multiplicity == 0)
-					{
-fprintf (stderr, "dead arc: %u->%u\n", getTwinEdge (edgesInReadPaths[start]), getTwinEdge (pre_edgeId));
-						arc->to_ed = 0;
-					}
-				}
-
-				pre_edgeId = edgesInReadPaths[start];
-			}
-//>>
-
-			for (start = readPath[readId].start; start < end; start++)
-			{
-				block = subGraph[target_pos+(idx-start)];
-				node = block->first_edge;
-				prev_node = NULL;
-				while (node != NULL)
-				{
-					if (node->to_ed == getTwinEdge (edgesInReadPaths[start]) && node->to_ed != bal_edgeno)
-					{
-fprintf (stderr, "rm: edge %u, multi %d\n", node->to_ed, node->multiplicity);
-						node->multiplicity--;
-						if (node->multiplicity > 0)
-						{
-							break;
-						}
-						if (prev_node == NULL)
-						{
-							block->first_edge = node->next;
-							free ((void*) node);
-							node = block->first_edge;
-						}
-						else
-						{
-							prev_node->next = node->next;
-							free ((void*) node);
-							node = prev_node->next;
-						}
-
-						block->edge_num--;
-						del_count++;
-						break;
-					}
-					else
-					{
-						prev_node = node;
-						node = node->next;
-					}
-				}
-				edgesInReadPaths[start] = 0;	//lzy 1208
-			}
-
-			markers[i] = 0;
-		}
-	}
-
-	return del_count;
-*/
 }
 
 /********************
@@ -3100,7 +2996,7 @@ static void storeAnchorEdgePaths (unsigned int weak_arc_count, unsigned int mino
 	unsigned int i, bal_i, j, k;
 	unsigned int left_arc_num, right_arc_num, multi;
 //	PATHACROSSEDGE **edge_subGraph;
-	long long int readId, start, end, idx;
+	long long int readId,absReadId ,start, end, idx;
 //	long long cvg_cutoff = cvgAvg4Edge * 1.5;	//lzy 1216
 	long long cvg_cutoff = cvgAvg4NoneCvg1Edge * 1.5;	//lzy 1216
 	long long int *markers;
@@ -3181,9 +3077,9 @@ fprintf (stderr, "markers[%d]=%lld\n", j, markers[j]);
 			{
 				continue;
 			}
-
-			start = readPath[abs(readId)].start;
-			end = readPath[abs(readId)].end;
+            absReadId = labs(readId);
+			start = readPath[absReadId].start;
+			end = readPath[absReadId].end;
 #ifdef DEBUG
 if (i==150937 || i==22065690 || i==54477379)
 fprintf (stderr, "start=%lld, end=%lld\nedgesInReadPaths[start]=%u, edgesInReadPaths[end-1]=%u\n", start, end, edgesInReadPaths[start], edgesInReadPaths[end-1]);
@@ -3216,7 +3112,7 @@ fprintf (stderr, "start=%lld, end=%lld\nedgesInReadPaths[start]=%u, edgesInReadP
 				}
 			}
 
-			del_count += calPreAndSubEdgeNum (0, end - start, up_edgesInReadPaths, i, abs(readId), &prev_edge_num, &sub_edge_num, &is_circle);
+			del_count += calPreAndSubEdgeNum (0, end - start, up_edgesInReadPaths, i, absReadId, &prev_edge_num, &sub_edge_num, &is_circle);
 
 		/*	if (readId < 0 && end - start > maxPathLen)
 			{
@@ -3228,12 +3124,6 @@ fprintf (stderr, "start=%lld, end=%lld\nedgesInReadPaths[start]=%u, edgesInReadP
 				markers[j] = 0;
 				edgesInReadPaths[start] = 0;
 				edgesInReadPaths[end-1] = 0;
-#ifdef DEBUG
-if (i==150937 || i==22065690 || i==54477379 || abs(readId) == 34901404 || abs(readId) == 29934737)
-{
-	fprintf (stderr, "read %lld deleted in storeAnchorEdgePaths\n", abs(readId));
-}
-#endif
 				if (readId < 0 && end - start > maxPathLen)
                         	{
                                 	free ((void*) up_edgesInReadPaths);
