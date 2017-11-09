@@ -9,9 +9,11 @@ CC=             gcc
 CPP=			g++
 GCCVERSIONMAJOR := $(shell expr `$(CC) -dumpversion | cut -f1 -d.` \>= 4)
 GCCVERSIONMINOR := $(shell expr `$(CC) -dumpversion | cut -f2 -d.` \>= 5)
-#CFLAGS=         -O0 -g -pg -static #-mcrc32 
-#CFLAGS=         -O0 -g -fomit-frame-pointer -static -mcrc32 #-DDEBUG
-CFLAGS=          -O2 -g  -fomit-frame-pointer -static #-mcrc32 #-DDEBUG
+ifdef debug
+CFLAGS=          -O0 -g -fomit-frame-pointer  -DDEBUG
+else
+CFLAGS=          -O3 -fomit-frame-pointer  #-mcrc32 #-DDEBUG
+endif
 DFLAGS=         
 OBJS=		 subhash.o kmerhash.o newhash.o arc.o attachPEinfo.o bubble.o bubbleStat.o check.o classifyEdge.o compactEdge.o \
 		concatenateEdge.o connect.o contig.o cutTipPreGraph.o cutTip_graph.o \
@@ -38,11 +40,18 @@ endif
 
 ifdef 127mer
 CFLAGS += -DMER127
+ifdef debug
+PROG = SOAPdenovo_LR-127mer_debug
+else
 PROG = SOAPdenovo_LR-127mer
-
+endif
 else
 CFLAGS += -DMER63
+ifdef debug
+PROG = SOAPdenovo_LR-63mer_debug
+else
 PROG = SOAPdenovo_LR-63mer
+endif
 endif
 
 LINUX = 0
@@ -69,7 +78,7 @@ endif
 		@printf "Compiling $<...                             \r"; \
 		$(CC) -c $(CFLAGS) $(DFLAGS) $(INCLUDES) $< || echo "Error in command: $(CC) -c $(CFLAGS) $(DFLAGS) $(INCLUDES) $<"
 
-all:		clean SOAPdenovo
+all:	SOAPdenovo
 
 .PHONY:all clean install
 
@@ -79,20 +88,34 @@ envTest:
 #		@test $(GCCVERSIONMINOR) == 1 || sh -c 'echo "GCC version lower than 4.5.0";false;'
 
 ifdef 127mer
+ifdef debug
 SOAPdenovo:	envTest $(OBJS)
 		@cd sparsePregraph;make 127mer=1 debug=1 clean all;cd ..;
 		@$(CPP) sparsePregraph/*.o $(CFLAGS) -g -o $(PROG) $(OBJS) $(LIBPATH) $(LIBS) $(ENTRAFLAGS)
 		@printf "Linking...\r"
 		@printf "$(PROG) compilation done.\n";
-
 else
+SOAPdenovo:	envTest $(OBJS)
+		@cd sparsePregraph;make 127mer=1  clean all;cd ..;
+		@$(CPP) sparsePregraph/*.o $(CFLAGS) -o $(PROG) $(OBJS) $(LIBPATH) $(LIBS) $(ENTRAFLAGS)
+		@printf "Linking...\r"
+		@printf "$(PROG) compilation done.\n";
+endif
+else
+ifdef debug
 SOAPdenovo:	envTest $(OBJS)
 		@cd sparsePregraph;make 63mer=1 debug=1 clean all;cd ..;
 		@$(CPP) sparsePregraph/*.o $(CFLAGS) -g -o $(PROG) $(OBJS) $(LIBPATH) $(LIBS) $(ENTRAFLAGS)
 		@printf "Linking...\r"
 		@printf "$(PROG) compilation done.\n";
-
+else
+SOAPdenovo:	envTest $(OBJS)
+		@cd sparsePregraph;make 63mer=1  clean all;cd ..;
+		@$(CPP) sparsePregraph/*.o $(CFLAGS) -o $(PROG) $(OBJS) $(LIBPATH) $(LIBS) $(ENTRAFLAGS)
+		@printf "Linking...\r"
+		@printf "$(PROG) compilation done.\n";
 endif	
+endif
 
 clean:
 		@rm -fr gmon.out *.o a.out *.exe *.dSYM $(PROG) *~ *.a *.so.* *.so *.dylib

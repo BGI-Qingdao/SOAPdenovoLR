@@ -25,6 +25,9 @@
 #include "newhash.h"
 #include <extfunc.h>
 #include <extvab.h>
+#ifdef DEBUG
+#define inline 
+#endif
 
 static pthread_mutex_t mutex_arc;
 
