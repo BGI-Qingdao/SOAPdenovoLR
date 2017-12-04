@@ -477,7 +477,11 @@ boolean prlRead2HashTable ( char * libfile, char * outfile )
 					if ( turn == 1 )
 					{
 						turn = 2;
-						readseqInLib ( seqBuffer[read_c], next_name, & ( lenBuffer[read_c] ), readBuffer1, &start1, offset1, libNo );
+						if( ! readseqInLib ( seqBuffer[read_c], next_name, & ( lenBuffer[read_c] ), readBuffer1, &start1, offset1, libNo ) )
+                        {
+                            fprintf(stderr,"readseqInLib return error ! please make sure your input file is correct fastq/fasta file.\n");
+                            fprintf(stderr,"invalid data left in buffer :\n%s\n",readBuffer1+start1);
+                        }
 
 						if ( ( ++i ) % 100000000 == 0 )
 							{ fprintf ( stderr, "--- %lldth reads.\n", i ); }
@@ -522,7 +526,11 @@ boolean prlRead2HashTable ( char * libfile, char * outfile )
 					if ( turn == 2 )
 					{
 						turn = 1;
-						readseqInLib ( seqBuffer[read_c], next_name, & ( lenBuffer[read_c] ), readBuffer2, &start2, offset2, libNo );
+						if( ! readseqInLib ( seqBuffer[read_c], next_name, & ( lenBuffer[read_c] ), readBuffer2, &start2, offset2, libNo ) )
+                        {
+                            fprintf(stderr,"readseqInLib return error ! please make sure your input file is correct fastq/fasta file.\n");
+                            fprintf(stderr,"invalid data left in buffer :\n%s\n",readBuffer2+start2);
+                        }
 
 						if ( ( ++i ) % 100000000 == 0 )
 							{ fprintf ( stderr, "--- %lldth reads.\n", i ); }
@@ -590,7 +598,11 @@ boolean prlRead2HashTable ( char * libfile, char * outfile )
 
 				while ( start < offset )
 				{
-					readseqInLib ( seqBuffer[read_c], next_name, & ( lenBuffer[read_c] ), readBuffer1, &start, offset, libNo );
+                    if( !readseqInLib ( seqBuffer[read_c], next_name, & ( lenBuffer[read_c] ), readBuffer1, &start, offset, libNo ) )
+                    {
+                        fprintf(stderr,"readseqInLib return error ! please make sure your input file is correct fastq/fasta file.\n");
+                        fprintf(stderr,"invalid data left in buffer :\n%s\n",readBuffer1+start);
+                    }
 
 					if ( ( ++i ) % 100000000 == 0 )
 						{ fprintf ( stderr, "--- %lldth reads.\n", i ); }
