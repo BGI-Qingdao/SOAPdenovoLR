@@ -827,22 +827,22 @@ static void search1kmerPlus ( int j, unsigned char thrdID )
 
 	if ( smallerBuffer[j] )
 	{
-		mixBuffer[j].low2 = node->l_links;
+		mixBuffer[j].low2 = get_kmer_contig_id(*node); //->l_links;
 	}
 	else
 	{
-		mixBuffer[j].low2 = node->l_links + node->twin - 1;
+		mixBuffer[j].low2 = get_kmer_contig_id(*node) + node->twin - 1;
 	}
 
 #else
 
 	if ( smallerBuffer[j] )
 	{
-		mixBuffer[j].low = node->l_links;
+		mixBuffer[j].low = get_kmer_contig_id(*node);
 	}
 	else
 	{
-		mixBuffer[j].low = node->l_links + node->twin - 1;
+		mixBuffer[j].low = get_kmer_contig_id(*node) + node->twin - 1;
 	}
 
 #endif
@@ -889,11 +889,11 @@ static void parse1read ( int t, int threadID )
 		{
 			if ( isSmaller )
 			{
-				edge_index = node->l_links;
+				edge_index = get_kmer_edge_id(*node);
 			}
 			else
 			{
-				edge_index = node->l_links + node->twin - 1;
+				edge_index = get_kmer_edge_id(*node) + node->twin - 1;
 			}
 
 #ifdef MER127
@@ -1058,12 +1058,12 @@ static void parse1LongRead (int t, int threadID)
 		{
 			if (isSmaller)
 			{
-				edge_index = node->l_links;
+				edge_index = get_kmer_edge_id(*node);
 //				currentEnd = node->r_links;
 			}
 			else
 			{
-				edge_index = node->l_links + node->twin - 1;
+				edge_index = get_kmer_edge_id(*node) +node->twin - 1;
 				/*
 				if ( node->r_links == 1 )
 				{

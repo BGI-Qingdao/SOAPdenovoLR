@@ -298,7 +298,8 @@ static void parse1read ( int t )
 				continue;
 			}
 
-			if ( nodeBuffer[s]->l_links == node->l_links )
+			//if ( nodeBuffer[s]->l_links == node->l_links )
+			if ( get_kmer_contig_id(*nodeBuffer[s]) == get_kmer_contig_id(*node) )
 			{
 				flag++;
 				nodeBuffer[s] = NULL;
@@ -342,7 +343,7 @@ static void parse1read ( int t )
 	i = pos - start + 1;
 	node = nodeBuffer[j];
 	isSmaller = smallerBuffer[j];
-	contigID = node->l_links;
+	contigID = get_kmer_contig_id(*node) ;
 	ctgLen = contig_array[contigID].length;
 	pos = node->r_links;
 
@@ -407,7 +408,7 @@ static void locate1read ( int t )
 
 		i = j - start + 1;
 		isSmaller = smallerBuffer[j];
-		contigID = node->l_links;
+		contigID = get_kmer_contig_id(*node);
 		ctgLen = contig_array[contigID].length;
 		pos = node->r_links;
 
