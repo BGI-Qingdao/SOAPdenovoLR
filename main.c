@@ -580,3 +580,4 @@ static void display_all_usage ()
 	fprintf ( stderr, "  -N <int>       genomeSize: genome size for statistics, [0]\n" );
 	fprintf ( stderr, "  -V (optional)  output information for Hawkeye to visualize the assembly, [NO]\n" );
 }
+
