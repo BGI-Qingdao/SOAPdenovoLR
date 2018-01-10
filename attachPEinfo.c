@@ -438,7 +438,10 @@ int connectByPE_grad ( FILE * fp, int peGrad, char * line )
 		{
 			continue;
 		}
-
+		if ( contigno > num_ctg )
+		{
+			continue ;
+		}
 		newIndex = index_array[contigno];
 
 		if ( isSameAsTwin ( newIndex ) )
@@ -549,7 +552,10 @@ int connectByPE_grad_gz ( gzFile * fp, int peGrad, char * line )
 		{
 			continue;
 		}
-
+		if ( contigno > num_ctg )
+		{
+			continue ;
+		}
 		newIndex = index_array[contigno];
 
 		if ( isSameAsTwin ( newIndex ) )
