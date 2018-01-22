@@ -379,7 +379,7 @@ PROTECTED_FUNC static inline void encap_kmerset ( KmerSet * set, ubyte8 num )
 		n = find_next_prime_kh ( n );
 	}
 	while ( n * set->load_factor < set->count + num );
-
+    //fprintf(stderr,"table expand to %d\n",n);
 	set->array = realloc ( set->array, n * sizeof ( kmer_t ) );
 	//printf("Allocate Mem %lld(%d*%lld*%d)bytes\n",thrd_num*n*sizeof(kmer_t),thrd_num,n,sizeof(kmer_t));
 

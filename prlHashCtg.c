@@ -28,7 +28,7 @@
 
 //debugging variables
 static long long * kmerCounter;
-
+extern long contigTotalLength;
 //buffer related varibles for chop kmer
 static unsigned int read_c;
 static char ** rcSeq;
@@ -359,7 +359,13 @@ boolean prlContig2nodes ( char * grapfile, int len_cut )
 	ctgIdArray = ( int * ) ckalloc ( max_read_c * sizeof ( int ) );
 	fp = ckopen ( name, "r" );
 	rcSeq = ( char ** ) ckalloc ( ( thrd_num + 1 ) * sizeof ( char * ) );
-
+    
+    long initHashSize = 1024;
+    float loadFactor = 0.77f;
+    if( contigTotalLength != 0 )
+    {
+        initHashSize = contigTotalLength / thrd_num /loadFactor ;
+    }
 	if ( 1 )
 	{
 		kmerCounter = ( long long * ) ckalloc ( ( thrd_num + 1 ) * sizeof ( long long ) );
@@ -367,7 +373,7 @@ boolean prlContig2nodes ( char * grapfile, int len_cut )
 
 		for ( i = 0; i < thrd_num; i++ )
 		{
-			KmerSets[i] = init_kmerset ( 1024, 0.77f );
+			KmerSets[i] = init_kmerset ( initHashSize, loadFactor );
 			thrdSignal[i + 1] = 0;
 			paras[i].threadID = i;
 			paras[i].mainSignal = &thrdSignal[0];
