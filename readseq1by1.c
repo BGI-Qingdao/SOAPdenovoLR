@@ -39,7 +39,7 @@
 #include "razf.h"
 #include "sam_header.h"
 #include "zconf.h"
-
+#include "errno.h"
 static char src_rc_seq[1024];
 static int state = -3;
 static int readstate = 0;
@@ -352,11 +352,13 @@ void readseqfq ( char * src_seq, char * src_name, int * len_seq, char * buf, int
 
 void read1seqfq ( char * src_seq, char * src_name, int * len_seq, FILE * fp )
 {
+    //fprintf(stderr," fp %p \n",fp);
 	int i, n, strL;
 	char c;
 	int lineLen = gLineLen;
 	char tmpStr[lineLen];
-	char * str;
+    //fprintf(stderr,"lineLen %d , gStr %p , tmpStr %p fp %p\n",lineLen,gStr , tmpStr, fp);
+	char * str = NULL;
 
 	if ( gStr == NULL )
 	{
@@ -366,7 +368,9 @@ void read1seqfq ( char * src_seq, char * src_name, int * len_seq, FILE * fp )
 	{
 		str = gStr;
 		lineLen = maxReadLen + 1;
+    //fprintf(stderr,"lineLen %d fp %p\n",lineLen,fp);
 	}
+  //fprintf(stderr,"str %p , fp %p\n",str,fp);
 
 	boolean flag = 0;
 
@@ -379,7 +383,8 @@ void read1seqfq ( char * src_seq, char * src_name, int * len_seq, FILE * fp )
 			break;
 		}
 	}
-
+  //fprintf(stderr,"str %p ,1  fp %p\n",str,fp);
+  
 	if ( !flag )    //last time reading fq file get this
 	{
 		*len_seq = 0;
@@ -396,10 +401,12 @@ void read1seqfq ( char * src_seq, char * src_name, int * len_seq, FILE * fp )
 
 	while ( fgets ( str, lineLen, fp ) )
 	{
+    //fprintf(stderr,"str %p ,2  fp %p ,n %d\n",str,fp,n);
 		if ( str[0] == '+' )
 		{
 			fgets ( str, lineLen, fp ); // pass quality value line
 			*len_seq = n;
+      //fprintf(stderr,"str %p ,3 fp %p ,n %d\n",str,fp,n);
 			return;
 		}
 		else
@@ -654,6 +661,7 @@ int nextValidIndex ( int libNo, boolean pair, unsigned char asm_ctg )
 
 static FILE * openFile4read ( char * fname )
 {
+ //fprintf(stderr,"fname %s\n",fname);
 	FILE * fp;
 	int i, j = 0;
 	char str_sub[4];
@@ -673,7 +681,13 @@ static FILE * openFile4read ( char * fname )
 		char * cmd = ( char * ) ckalloc ( ( strlen ( fname ) + 20 ) * sizeof ( char ) );
 		sprintf ( cmd, "gzip -dc %s", fname );
 		fp = popen ( cmd, "r" );
+    fprintf(stderr,"fp after gzip %p\n cmd %s\n fname %s \n",fp,cmd,fname);
+    if( fp == NULL )
+    {
+        fprintf(stderr, "ERROR : %s", strerror(errno));
+    }
 		free ( cmd );
+    //exit(1);
 		return fp;
 	}
 	else
@@ -709,40 +723,40 @@ void openFileInLib ( int libNo )
 
 	if ( lib_array[i].curr_type == 1 )
 	{
-		fprintf ( stderr, "Import reads from file:\n %s\n", lib_array[i].a1_fname[lib_array[i].curr_index] );
-		fprintf ( stderr, "Import reads from file:\n %s\n", lib_array[i].a2_fname[lib_array[i].curr_index] );
 		lib_array[i].fp1 = openFile4read ( lib_array[i].a1_fname[lib_array[i].curr_index] );
 		lib_array[i].fp2 = openFile4read ( lib_array[i].a2_fname[lib_array[i].curr_index] );
+		fprintf ( stderr, "Import reads from file:\n %s\n fp1 in type 1 %p\n", lib_array[i].a1_fname[lib_array[i].curr_index] ,  lib_array[i].fp1);
+		fprintf ( stderr, "Import reads from file:\n %s\n fp2 in type 1 %p\n", lib_array[i].a2_fname[lib_array[i].curr_index] , lib_array[i].fp2);
 		lib_array[i].curr_index++;
 		lib_array[i].paired = 1;
 	}
 	else if ( lib_array[i].curr_type == 2 )
 	{
-		fprintf ( stderr, "Import reads from file:\n %s\n", lib_array[i].q1_fname[lib_array[i].curr_index] );
-		fprintf ( stderr, "Import reads from file:\n %s\n", lib_array[i].q2_fname[lib_array[i].curr_index] );
 		lib_array[i].fp1 = openFile4read ( lib_array[i].q1_fname[lib_array[i].curr_index] );
 		lib_array[i].fp2 = openFile4read ( lib_array[i].q2_fname[lib_array[i].curr_index] );
+		fprintf ( stderr, "Import reads from file:\n %s\n fp1 in type 2 %p\n", lib_array[i].q1_fname[lib_array[i].curr_index] ,  lib_array[i].fp1);
+		fprintf ( stderr, "Import reads from file:\n %s\n fp2 in type 2 %p\n", lib_array[i].q2_fname[lib_array[i].curr_index] , lib_array[i].fp2);
 		lib_array[i].curr_index++;
 		lib_array[i].paired = 1;
 	}
 	else if ( lib_array[i].curr_type == 3 )
 	{
-		fprintf ( stderr, "Import reads from file:\n %s\n", lib_array[i].p_fname[lib_array[i].curr_index] );
 		lib_array[i].fp1 = openFile4read ( lib_array[i].p_fname[lib_array[i].curr_index] );
+		fprintf ( stderr, "Import reads from file:\n %s\n fp1 in type 3 %p\n", lib_array[i].p_fname[lib_array[i].curr_index] , lib_array[i].fp1);
 		lib_array[i].curr_index++;
 		lib_array[i].paired = 0;
 	}
 	else if ( lib_array[i].curr_type == 5 )
 	{
-		fprintf ( stderr, "Import reads from file:\n %s\n", lib_array[i].s_a_fname[lib_array[i].curr_index] );
 		lib_array[i].fp1 = openFile4read ( lib_array[i].s_a_fname[lib_array[i].curr_index] );
+		fprintf ( stderr, "Import reads from file:\n %s\n fp1 in type 5 %p\n", lib_array[i].s_a_fname[lib_array[i].curr_index], lib_array[i].fp1 );
 		lib_array[i].curr_index++;
 		lib_array[i].paired = 0;
 	}
 	else if ( lib_array[i].curr_type == 6 )
 	{
-		fprintf ( stderr, "Import reads from file:\n %s\n", lib_array[i].s_q_fname[lib_array[i].curr_index] );
 		lib_array[i].fp1 = openFile4read ( lib_array[i].s_q_fname[lib_array[i].curr_index] );
+		fprintf ( stderr, "Import reads from file:\n %s\n", lib_array[i].s_q_fname[lib_array[i].curr_index] );
 		lib_array[i].curr_index++;
 		lib_array[i].paired = 0;
 	}
@@ -1100,6 +1114,7 @@ boolean read1seqInLib ( char * src_seq, char * src_name, int * len_seq, int * li
 	{
 		if ( lib_array[i].paired == 1 )
 		{
+      //fprintf(stderr,"before read1seqfq i %d fp1 %p \n",i,lib_array[i].fp1);
 			read1seqfq ( src_seq, src_name, len_seq, lib_array[i].fp1 );
 
 			/*
@@ -1128,6 +1143,7 @@ boolean read1seqInLib ( char * src_seq, char * src_name, int * len_seq, int * li
 		}
 		else
 		{
+      //fprintf(stderr,"before read1seqfq i %d fp2 %p \n",i,lib_array[i].fp2);
 			read1seqfq ( src_seq, src_name, len_seq, lib_array[i].fp2 );
 
 			if ( lib_array[i].reverse )
@@ -1143,6 +1159,7 @@ boolean read1seqInLib ( char * src_seq, char * src_name, int * len_seq, int * li
 
 	if ( lib_array[i].curr_type == 6 )
 	{
+    //fprintf(stderr,"before 6 read1seqfq i %d fp2 %p \n",i,lib_array[i].fp2);
 		read1seqfq ( src_seq, src_name, len_seq, lib_array[i].fp1 );
 	}
 	else if ( lib_array[i].curr_type == 4 )

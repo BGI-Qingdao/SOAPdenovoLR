@@ -1865,8 +1865,7 @@ static int cmp_seq ( const void * a, const void * b )
 
 				fprintf ( stderr , "\n" );
 				fprintf ( stderr, "cmp_seq:\terr\n" );
-				exit ( 0 );
-				return 0;
+				return -1;
 			}
 		}
 		else

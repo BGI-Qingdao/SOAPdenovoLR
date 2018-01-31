@@ -362,9 +362,11 @@ boolean prlContig2nodes ( char * grapfile, int len_cut )
     
     long initHashSize = 1024;
     float loadFactor = 0.77f;
-    if( contigTotalLength != 0 )
+    if( contigTotalLength > 100000  )
     {
-        initHashSize = contigTotalLength / thrd_num /loadFactor ;
+        loadFactor = 0.85f;
+        initHashSize =( contigTotalLength / thrd_num ) ;
+        initHashSize /= loadFactor ;
     }
 	if ( 1 )
 	{
