@@ -89,13 +89,13 @@ envTest:
 
 ifdef 127mer
 ifdef debug
-SOAPdenovo:	envTest $(OBJS)
+SOAPdenovo:	 clean envTest $(OBJS)
 		@cd sparsePregraph;make 127mer=1 debug=1 clean all;cd ..;
 		@$(CPP) sparsePregraph/*.o $(CFLAGS) -g -o $(PROG) $(OBJS) $(LIBPATH) $(LIBS) $(ENTRAFLAGS)
 		@printf "Linking...\r"
 		@printf "$(PROG) compilation done.\n";
 else
-SOAPdenovo:	envTest $(OBJS)
+SOAPdenovo:	clean envTest $(OBJS)
 		@cd sparsePregraph;make 127mer=1  clean all;cd ..;
 		@$(CPP) sparsePregraph/*.o $(CFLAGS) -o $(PROG) $(OBJS) $(LIBPATH) $(LIBS) $(ENTRAFLAGS)
 		@printf "Linking...\r"
@@ -103,13 +103,13 @@ SOAPdenovo:	envTest $(OBJS)
 endif
 else
 ifdef debug
-SOAPdenovo:	envTest $(OBJS)
+SOAPdenovo: clean	envTest $(OBJS)
 		@cd sparsePregraph;make 63mer=1 debug=1 clean all;cd ..;
 		@$(CPP) sparsePregraph/*.o $(CFLAGS) -g -o $(PROG) $(OBJS) $(LIBPATH) $(LIBS) $(ENTRAFLAGS)
 		@printf "Linking...\r"
 		@printf "$(PROG) compilation done.\n";
 else
-SOAPdenovo:	envTest $(OBJS)
+SOAPdenovo: clean	envTest $(OBJS)
 		@cd sparsePregraph;make 63mer=1  clean all;cd ..;
 		@$(CPP) sparsePregraph/*.o $(CFLAGS) -o $(PROG) $(OBJS) $(LIBPATH) $(LIBS) $(ENTRAFLAGS)
 		@printf "Linking...\r"
