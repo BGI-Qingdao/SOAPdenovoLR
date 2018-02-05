@@ -871,6 +871,7 @@ static int searchFgap ( KmerSet * kset, CTGinSCAF * ctg1, CTGinSCAF * ctg2, Kmer
 			char * pt;
 			boolean repeat = 0, sameLen = 1;
 			int leftMost = max, rightMost = max;
+/*
 #ifdef DEBUG
 
 			if ( num_route < 1 )
@@ -880,10 +881,11 @@ static int searchFgap ( KmerSet * kset, CTGinSCAF * ctg1, CTGinSCAF * ctg2, Kmer
 			}
 
 #else
+*/
 
 			if ( num_route < 1 ) { continue; }
 
-#endif
+//#endif
 
 			if ( num_route > 1 )
 			{

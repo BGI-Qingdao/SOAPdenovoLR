@@ -619,18 +619,20 @@ static void extendPath (PATHACROSSEDGE *merged_edge_path, int first_pos, int las
 	Entity *pathEntity_bal;
 	pathUNIT **subGraph;
 	pathUNIT **subGraph_bal;
+    /*
 #ifdef DEBUG
 fprintf (stderr, "first_pos=%d, last_pos=%d, edge_num_in_path=%lld\n", first_pos, last_pos, edge_num_in_path);
-#endif
+#endif*/
 /*<<lzy 0529
 	if (extend_left == 1)
 	{
 fflush (stdout);
 		extend_left = 0;
 >>*/
+/*
 #ifdef DEBUG
 fprintf (stderr, "extend to left!\n");
-#endif
+#endif*/
 //	for (i=0; i<first_pos; i++)
 	for (i = first_pos - 1; i >= 0; i--)	//lzy 1227
 	{
@@ -642,10 +644,11 @@ fprintf (stderr, "extend to left!\n");
 		flag = 0;
 		edgeId = getEdgeInPath (merged_edge_path, i);
 		bal_edgeId = getTwinEdge (edgeId);
+    /*
 #ifdef DEBUG
 fprintf (stderr, "i=%i, edgeId=%u, bal_edgeId=%u, in_path=%d\n", i, edgeId, bal_edgeId, edge_array[edgeId].in_path);
 #endif
-
+    */
 		pathEntity = get_entity1(subGraphSet, edgeId);
 		pathEntity_bal = get_entity1(subGraphSet, bal_edgeId);
 		if(pathEntity!=NULL)
@@ -697,10 +700,11 @@ fprintf (stderr, "i=%i, edgeId=%u, bal_edgeId=%u, in_path=%d\n", i, edgeId, bal_
 		{
 			continue;
 		}
+        /*
 #ifdef DEBUG
 fprintf (stderr, "pass!\ncurr_pos=%lld, edge_num_in_isolated_path=%d\n", curr_pos, edge_num_in_isolated_path);
 #endif
-
+*/
 //		edge_array[edgeId].in_path = 1;
 //		edge_array[bal_edgeId].in_path = 1;
 
@@ -767,9 +771,10 @@ fprintf (stderr, "pass!\ncurr_pos=%lld, edge_num_in_isolated_path=%d\n", curr_po
 			if (edge_array[local_edgeId].in_path == 0)	//lzy 1207
 			{
 				unshiftEdgePath (merged_edge_path, local_edgeId);
+                /*
 #ifdef DEBUG
 fprintf (stderr, "%d edges, first edge %u\n", merged_edge_path->edge_num, merged_edge_path->first_edge->to_ed);
-#endif
+#endif*/
 			}
 //lzy 1207			if (edge_array[local_edgeId].in_path == 1)
 			else
@@ -822,19 +827,20 @@ fprintf (stderr, "extend_left=%d, first_pos=%d, last_pos=%d, edge_num_in_path=%l
 	{
 		extend_right = 0;
 >>*/
+    /*
 #ifdef DEBUG
 fprintf (stderr, "extend to right!\n");
-#endif
+#endif*/
 //	for (i=edge_num_in_path-1; i>last_pos; i--)
 	for (i=last_pos+1; i<edge_num_in_path; i++)	//lzy 1227
 	{
 		flag = 0;
 		edgeId = getEdgeInPath (merged_edge_path, i);
 		bal_edgeId = getTwinEdge (edgeId);
-		
+		/*
 #ifdef DEBUG
 fprintf (stderr, "i=%i, edgeId=%u, bal_edgeId=%u\n", i, edgeId, bal_edgeId);
-#endif
+#endif*/
 		pathEntity = NULL;
                 pathEntity_bal = NULL;
                 subGraph = NULL;
@@ -892,10 +898,11 @@ fprintf (stderr, "i=%i, edgeId=%u, bal_edgeId=%u\n", i, edgeId, bal_edgeId);
 		{
 			continue;
 		}
-
+/*
 #ifdef DEBUG
 fprintf (stderr, "pass!\ncurr_pos=%lld, edge_num_in_isolated_path=%d\n", curr_pos, edge_num_in_isolated_path);		
 #endif
+*/
 		extend_num = (edge_num_in_isolated_path - curr_pos) - (edge_num_in_path-i);
 //<<lzy 1227
 		if (extend_num > 0)
@@ -971,9 +978,10 @@ fprintf (stderr, "pass!\ncurr_pos=%lld, edge_num_in_isolated_path=%d\n", curr_po
 			if (edge_array[local_edgeId].in_path == 0)	//lzy 1207
 			{
 				pushEdgePath (merged_edge_path, local_edgeId);
+                /*
 #ifdef DEBUG
 fprintf (stderr, "%d edges, last edge %u\n", merged_edge_path->edge_num, merged_edge_path->last_edge->to_ed);
-#endif
+#endif*/
 //fflush (stdout);
 			}
 //lzy 1207			if (edge_array[local_edgeId].in_path == 1)
@@ -1216,9 +1224,10 @@ fflush (stdout);
 		arcCounts (edgeId, &arc_num);
 		if (arc_num > 1)
 		{
+            /*
 #ifdef DEBUG
 fprintf (stderr, "rm %u[cvg %d, len %d]\n", edgeId, edge_array[edgeId].cvg, edge_array[edgeId].length);
-#endif
+#endif*/
 			rm_edge_count++;
 //			edge_array[edgeId].type = 0;
 			continue;
@@ -1227,18 +1236,19 @@ fprintf (stderr, "rm %u[cvg %d, len %d]\n", edgeId, edge_array[edgeId].cvg, edge
 		bal_edgeId = getTwinEdge (edgeId);
 		arcCounts (bal_edgeId, &arc_num);
 		if (arc_num > 1)
-		{
+		{/*
 #ifdef DEBUG
 fprintf (stderr, "rm %u[cvg %d, len %d]\n", edgeId, edge_array[edgeId].cvg, edge_array[edgeId].length);
-#endif
+#endif*/
 			rm_edge_count++;
 //			edge_array[edgeId].type = 0;
 			continue;
 		}
 	}
+    /*
 #ifdef DEBUG
 fprintf (stderr, "%u anchor edge removed\n", rm_edge_count);
-#endif
+#endif*/
 //>>
 
 	for (i=0; i<edgeno; i++)
@@ -1254,9 +1264,10 @@ fprintf (stderr, "%u anchor edge removed\n", rm_edge_count);
 		}
 
 		subGraph = entity->path;
+        /*
 #ifdef DEBUG
 fprintf (stderr, "start edge: %u\tin_path: %d\n", edgeId, edge_array[edgeId].in_path);
-#endif
+#endif*/
 //		if (edge_array[edgeId].in_path == 1) {
 		if (edge_array[edgeId].in_path == 1 || subGraph == NULL)	//lzy 1208
 		{
@@ -1323,29 +1334,31 @@ fprintf (stderr, "%u already in path(B)\n", edgesInReadPaths[idx]);
 			}
 		}
 //>>
+/*
 #ifdef DEBUG
 fprintf (stderr, "old start %lld, new start %lld, old end %lld, new end %lld\n", readPath[i].start, start, readPath[i].end, end);
-#endif
+#endif*/
 		
 		for (idx=start; idx<end; idx++)
 		{
 			pushEdgePath (merged_edge_path, edgesInReadPaths[idx]);
+            /*
 #ifdef DEBUG
 fprintf (stderr, "%d edges, last edge %u\n", merged_edge_path->edge_num, edgesInReadPaths[idx]);
-#endif
+#endif*/
 		}
 
 		extendPath (merged_edge_path, partitionPos[i]-start_lost, partitionPos[i]-start_lost, end-start);
 //0529		extendPath (merged_edge_path, partitionPos[i]-start_lost, partitionPos[i]-start_lost, end-start, extend_left, extend_right);
 //		extendPath (merged_edge_path, partitionPos[i], partitionPos[i], readPath[i].end-readPath[i].start);
-
+/*
 #ifdef DEBUG
 		fprintf (stderr, ">path%i edge %i\n", merged_path_num, merged_edge_path->edge_num);
 		fprintf(pathSeq_fp,">path%i edge %i\n", merged_path_num, merged_edge_path->edge_num);
 		outputEdgePath (merged_edge_path);
 		outputEdgePathSeq (merged_edge_path,pathSeq_fp);
 		
-#endif
+#endif*/
 
 //fprintf (stderr, "before cp edge, edge 504798->%u, multi %d\n", edge_array[504798].arcs->to_ed, edge_array[504798].arcs->multiplicity);
 		cpRepeatEdgesInPath (merged_edge_path);
@@ -1451,12 +1464,13 @@ fprintf (stderr, "edge %u not found!\n", edgeno);
 	{
 		if (edge_array[up_edgesInReadPaths[i]].deleted == 1 || getArcBetween(prev_ed, up_edgesInReadPaths[i]) == NULL)
 		{
+            /*
 #ifdef DEBUG
 if ((edgeno == 150937 || edgeno==22065690 || edgeno==54477379) && (getArcBetween(prev_ed, up_edgesInReadPaths[i]) == NULL))
 {
 	fprintf (stderr, "arc between %u and %u doesn't exist\n", prev_ed, up_edgesInReadPaths[i]);
 }
-#endif
+#endif*/
 			distance = i - start - (*prev_num);
 			ed_pos = *prev_num;
 
@@ -1679,9 +1693,10 @@ static int resetSubGraph (unsigned int edgeno, int center)
 	}*/
 	 if (curr_path_len == 1)
 	{
+        /*
 #ifdef DEBUG
 fprintf (stderr, "resetSubGraph: edgeno=%u[len %d, cvg %d, multi %d], bal_edgeno=%u\n", edgeno, edge_array[edgeno].length, edge_array[edgeno].cvg, edge_array[edgeno].multi, getTwinEdge(edgeno));
-#endif
+#endif*/
 		edge_array[edgeno].flag = 0;
 //		edge_array[edgeno].type = 0;
 //		edge_array[edgeno].path_len = 0;
@@ -1799,9 +1814,10 @@ static void decreaseArcMultiInReadPath (unsigned int *up_edgesInReadPaths, long 
 			arc->multiplicity--;
 			if (arc->multiplicity == 0)
 			{
+                /*
 #ifdef DEBUG
 fprintf (stderr, "dead arc: %u->%u\n", pre_edgeId, up_edgesInReadPaths[start]);
-#endif
+#endif*/
 				arc->to_ed = 0;
 			}
 		}
@@ -1813,9 +1829,10 @@ fprintf (stderr, "dead arc: %u->%u\n", pre_edgeId, up_edgesInReadPaths[start]);
 			arc->multiplicity--;
 			if (arc->multiplicity == 0)
 			{
+                /*
 #ifdef DEBUG
 fprintf (stderr, "dead arc: %u->%u\n", getTwinEdge (up_edgesInReadPaths[start]), getTwinEdge (pre_edgeId));
-#endif
+#endif*/
 				arc->to_ed = 0;
 			}
 		}
@@ -1848,9 +1865,10 @@ static void rmReadPathInRelatedGraph (long long int start, long long int end, un
 				target_edgeno = getTwinEdge (anchor_ed);
 				distance = i - start - anchor_ed_pos;
 			}
+            /*
 #ifdef DEBUG
 fprintf (stderr, "rmOneBranch: target_edId %u\n", path_edId);			
-#endif
+#endif*/
 				pathEntity = get_entity1(subGraphSet, path_edId);
 				if(pathEntity != NULL)
 				{
@@ -2027,9 +2045,10 @@ static int rmOneBranch (pathUNIT** subGraph, int center, unsigned int target_edg
 			{
 				if(block[j].edgeId == up_edgesInReadPaths[start] && block[j].edgeId != edgeno)
 				{
+                    /*
 #ifdef DEBUG
 fprintf (stderr, "rm: edge %u, multi %d\n", block[j].edgeId, block[j].weight);
-#endif
+#endif*/
 					del_count++;
 					block[j].weight--;
 					if(block[j].weight > 0)
@@ -2383,10 +2402,10 @@ fprintf (stderr, "i=%d, edge_num=%d\n", i, block->edge_num);
 		{
 //			if (block->first_edge->multiplicity > 1)	//lzy 1206
 			{
-
+/*
 #ifdef DEBUG
 fprintf (stderr, "%u:%d\n", block[1].edgeId, block[1].weight);
-#endif
+#endif*/
 
 				continue;
 			}
@@ -2402,9 +2421,10 @@ fprintf (stderr, "%u:%d\n", block[1].edgeId, block[1].weight);
 
 		for(j=1;j<=block[0].weight;j++)
 		{
+            /*
 #ifdef DEBUG
 fprintf (stderr, "%u:%d  ", block[j].edgeId, block[j].weight);
-#endif
+#endif*/
 			if(block[j].weight > max_multi)
 			{
 				max_multi = block[j].weight;
@@ -2424,9 +2444,10 @@ fprintf (stderr, "%u:%d  ", node->to_ed, node->multiplicity);
 			total_multi += node->multiplicity;
 			node = node->next;
 		}*/
+        /*
 #ifdef DEBUG
 fprintf (stderr, "\n");
-#endif
+#endif*/
 
 		if ((double)max_multi/(double)total_multi < cutoff_ratio)
 		{
@@ -2436,14 +2457,16 @@ fprintf (stderr, "\n");
 
 		for(j=1;j<=block[0].weight;j++)
 		{
+            /*
 #ifdef DEBUG
 fprintf (stderr, "\t%u:%d\n", block[j].edgeId, block[j].weight);
-#endif
+#endif*/
 			if(block[j].weight != max_multi && block[j].weight < cutoff_num)
 			{
+                /*
 #ifdef DEBUG
 fprintf (stderr, "rmLowCvgBranchPath: %u[multi %d], max_multi %d\n", block[j].edgeId, block[j].weight, max_multi);
-#endif
+#endif*/
 				count1 = rmOneBranch (subGraph, center, block[j].edgeId, i, 0, 0);
 				total += count1;
 				break;
@@ -2535,9 +2558,10 @@ fprintf (stderr, "i=%d, edge_num=%d\n", i, block->edge_num);
 		{
 //			if (block->first_edge->multiplicity > 1)	//lzy 1206
 			{
+                /*
 #ifdef DEBUG
 fprintf (stderr, "%u:%d\n", block[1].edgeId, block[1].weight);
-#endif
+#endif*/
 				continue;
 			}
 
@@ -2552,9 +2576,10 @@ fprintf (stderr, "%u:%d\n", block[1].edgeId, block[1].weight);
 
 		for(j=1;j<=block[0].weight;j++)
 		{
+            /*
 #ifdef DEBUG
 fprintf (stderr, "%u:%d  ", block[j].edgeId, block[j].weight);
-#endif
+#endif*/
 			if(block[j].weight > max_multi)
 			{
 				max_multi = block[j].weight;
@@ -2584,9 +2609,10 @@ fprintf (stderr, "%u:%d  ", node->to_ed, node->multiplicity);
 
 		for(j=1;j<=block[0].weight;j++)
 		{
+            /*
 #ifdef DEBUG
 fprintf (stderr, "%u:%d  ", block[j].edgeId, block[j].weight);
-#endif
+#endif*/
 			if(block[j].weight != max_multi && block[j].weight < cutoff_num)
 			{
 				count2 = rmOneBranch (subGraph, center, block[j].edgeId, i, 0, 0);
@@ -2646,9 +2672,10 @@ fprintf (stderr, "%u:%d  ", block[j].edgeId, block[j].weight);
 //				node = node->next;
 //			}
 //		}
+/*
 #ifdef DEBUG
 fprintf (stderr, "\n");
-#endif
+#endif*/
 
 //lzy 0514		if (count > 0)
 		if (count2 > 0)
@@ -2715,9 +2742,10 @@ static unsigned int pickUpPotentialAnchorEdges (double cvg_cutoff_cef, int path_
 	unsigned int left_arc_num, right_arc_num, multi;
 //	long long cvg_cutoff = cvgAvg4Edge * cvg_cutoff_cef;
 	long long cvg_cutoff = cvgAvg4NoneCvg1Edge * cvg_cutoff_cef;
+    /*
 #ifdef DEBUG
 fprintf (stderr, "cvg_cutoff: %lld\n", cvg_cutoff);
-#endif
+#endif*/
 
 	unsigned int index;
 //	char tmp[1024];
@@ -2787,9 +2815,10 @@ fprintf (stderr, "cvg_cutoff: %lld\n", cvg_cutoff);
 			continue;		
 		}
 		multi = edge_array[i].multi;
+        /*
 #ifdef DEBUG
 		fprintf (stderr, "edge: %u, deleted: %d, len: %d, cvg: %d, multi: %u, flag: %d\n", i, edge_array[i].deleted, edge_array[i].length, edge_array[i].cvg, multi, edge_array[i].flag);
-#endif
+#endif*/
 		if (edge_array[i].deleted == 1 || edge_array[i].cvg == 0 || edge_array[i].cvg > cvg_cutoff || EdSameAsTwin (i) 
 				|| multi == 255 || multi == 0 || edge_array[i].flag == 1) 
 		{
@@ -2801,9 +2830,10 @@ fprintf (stderr, "cvg_cutoff: %lld\n", cvg_cutoff);
 		}
 
 		arcCounts (i, &right_arc_num);
+        /*
 #ifdef DEBUG
 fprintf (stderr, "right_arc_num: %d\n", right_arc_num);
-#endif
+#endif*/
 		if (right_arc_num > 1)
 		{
 			if (EdSmallerThanTwin(i)||EdLargerThanTwin(i))
@@ -2815,9 +2845,10 @@ fprintf (stderr, "right_arc_num: %d\n", right_arc_num);
 
 		bal_i = getTwinEdge (i);
 		arcCounts (bal_i, &left_arc_num);
+        /*
 #ifdef DEBUG
 fprintf (stderr, "left_arc_num: %d\n", left_arc_num);
-#endif
+#endif*/
 		if (left_arc_num > 1)
 		{
 			if (EdSmallerThanTwin(i)||EdLargerThanTwin(i))
@@ -3027,9 +3058,10 @@ static void storeAnchorEdgePaths (unsigned int weak_arc_count, unsigned int mino
 //	unsigned int index;
 	for (i = 1; i <= num_ed; i++)
 	{
+    /*
 #ifdef DEBUG
 fprintf (stderr, "edge: %u, deleted: %d, len: %d, cvg: %d, multi: %u, flag: %d\n", i, edge_array[i].deleted, edge_array[i].length, edge_array[i].cvg, edge_array[i].multi, edge_array[i].flag);
-#endif		
+#endif*/		
 	//	i=index_array[swapped_index_array[index]];
 		if(edge_array[i].flag == 0)
 		{
@@ -3069,10 +3101,11 @@ fprintf (stderr, "edge: %u, deleted: %d, len: %d, cvg: %d, multi: %u, flag: %d\n
 		del_count = 0;
 		for (j = 0; j < multi; j++)
 		{
+            /*
 #ifdef DEBUG
 if (i==150937 || i==22065690 || i==54477379)
 fprintf (stderr, "markers[%d]=%lld\n", j, markers[j]);
-#endif
+#endif*/
 			if ((readId = markers[j]) == 0)
 			{
 				continue;
@@ -3080,10 +3113,11 @@ fprintf (stderr, "markers[%d]=%lld\n", j, markers[j]);
             absReadId = labs(readId);
 			start = readPath[absReadId].start;
 			end = readPath[absReadId].end;
+            /*
 #ifdef DEBUG
 if (i==150937 || i==22065690 || i==54477379)
 fprintf (stderr, "start=%lld, end=%lld\nedgesInReadPaths[start]=%u, edgesInReadPaths[end-1]=%u\n", start, end, edgesInReadPaths[start], edgesInReadPaths[end-1]);
-#endif
+#endif*/
 
 			if (edgesInReadPaths[start] == 0 || edgesInReadPaths[end-1] == 0)
 			{
@@ -3161,9 +3195,10 @@ fprintf (stderr, "start=%lld, end=%lld\nedgesInReadPaths[start]=%u, edgesInReadP
 
 		if (is_circle == 1)
 		{
+            /*
 #ifdef DEBUG
 fprintf (stderr, "circle in path\n");
-#endif
+#endif*/
 		/*	pathEntity = get_entity(subGraphSet, i);
 			if(pathEntity != NULL)
 			{
@@ -3203,9 +3238,10 @@ fprintf (stderr, "circle in path\n");
 
 			continue;
 		}
+        /*
 #ifdef DEBUG
 fprintf (stderr, "max_prev_edge_num=%d, max_sub_edge_num=%d\n", max_prev_edge_num, max_sub_edge_num);
-#endif
+#endif*/
 
 		if (subGraph != NULL)
 		{
@@ -3263,9 +3299,10 @@ fprintf (stderr, "max_prev_edge_num=%d, max_sub_edge_num=%d\n", max_prev_edge_nu
 			}
 			continue;
 		}
+        /*
 #ifdef DEBUG
 fprintf (stderr, "total_edge_num=%d\n", total_edge_num);
-#endif
+#endif*/
 		if (total_edge_num > (2*maxReadLen-overlaplen+1))
 			fprintf (stderr, "ERROR: edge number overflow\n");
 
@@ -3360,13 +3397,15 @@ static unsigned int simplifyAnchorEdgeGraph ()
 //		total_edge_num = edge_array[i].path_len;
 //		max_prev_edge_num = edge_array[i].pos_inPath;
 		is_branch = 0;
+        /*
 #ifdef DEBUG
 fprintf (stderr, "edge %u\n", i);
-#endif
+#endif*/
 		branch_count += rmLowCvgBranchPath (subGraph, total_edge_num, max_prev_edge_num, &is_branch);//test here
+        /*
 #ifdef DEBUG
 fprintf (stderr, "remove %d low coverage branch, is branch: %d\n", branch_count, is_branch);
-#endif
+#endif*/
 
 		if (is_branch == 1 || edge_array[i].flag == 0)
 		{
@@ -3403,24 +3442,26 @@ fprintf (stderr, "remove %d low coverage branch, is branch: %d\n", branch_count,
 		}
 
 		is_branch = checkPathBranch (subGraph, pathEntity->path_len);
-
+/*
 #ifdef DEBUG
 fprintf (stderr, "is branch %d, edge %u, max_prev_edge_num %d, total_edge_num %d\n", is_branch, i, max_prev_edge_num, total_edge_num);
-#endif
+#endif*/
 
 		if (is_branch == 0)
 		{
 			anchor_edge_num++;
+            /*
 #ifdef DEBUG
 fprintf (stderr, "anchor %u, %lld\n", i, anchor_edge_num);
 fprintf (stderr, "old max_prev_edge_num: %d, old total_edge_num: %d\n", max_prev_edge_num, total_edge_num);
-#endif
+#endif*/
 			max_prev_edge_num = pathEntity->pos_inPath;
 			total_edge_num = pathEntity->path_len;
 			edge_num_in_all_path += total_edge_num;
+            /*
 #ifdef DEBUG
 fprintf (stderr, "new max_prev_edge_num: %d, new total_edge_num: %d\n", max_prev_edge_num, total_edge_num);
-#endif
+#endif*/
 			if (edge_array[i].type == 0)
 			{
 				edge_array[i].type = 2;
@@ -3430,6 +3471,7 @@ fprintf (stderr, "new max_prev_edge_num: %d, new total_edge_num: %d\n", max_prev
 			fwrite (&max_prev_edge_num, sizeof (int), 1, iPath_fp);
 			fwrite (&total_edge_num, sizeof (int), 1, iPath_fp);
 */
+            /*
 #ifdef DEBUG
 			for (j = 0; j < total_edge_num; j++)
 			{
@@ -3437,7 +3479,7 @@ fprintf (stderr, "new max_prev_edge_num: %d, new total_edge_num: %d\n", max_prev
 				fprintf (stderr, "%u ", subGraph[j][1].edgeId);
 			}
 			fprintf (stderr, "\n");
-#endif
+#endif*/
 
 
 		}

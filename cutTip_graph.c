@@ -286,10 +286,11 @@ unsigned int removeWeakArcEdges (int lenCutoff, unsigned int multiCutoff)
 		{
 			continue;
 		}
-
+/*
 #ifdef DEBUG
 		printf (">%u,%u,%d,%d\n", i, bal_ed,edge_array[i].cvg,edge_array[i].length+overlaplen);
 #endif
+*/
 		EDGE *edge;
 		Kmer kmer;
 		int j;
@@ -299,6 +300,7 @@ unsigned int removeWeakArcEdges (int lenCutoff, unsigned int multiCutoff)
 		}else{
 			edge = &edge_array[bal_ed];
 		}
+        /*
 #ifdef DEBUG
 		kmer = vt_array[edge->from_vt].kmer;
 
@@ -314,6 +316,7 @@ unsigned int removeWeakArcEdges (int lenCutoff, unsigned int multiCutoff)
 		if(!((j + overlaplen ) % 100 == 0))
 			fprintf (stdout, "\n");
 #endif
+*/
 		destroyEdge (i);
 		counter++;
 	}
