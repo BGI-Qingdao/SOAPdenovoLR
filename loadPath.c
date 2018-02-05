@@ -41,14 +41,21 @@ None.
  *************************************************/
 static void add1marker2edge ( unsigned int edgeno, long long readid )
 {
-	if ( edge_array[edgeno].multi == 255 || edge_array[edgeno].deleted == 1)
+    if ( edge_array[edgeno].multi > 255 )
+    {
+        edge_array[edgeno].multi = 255 ;
+        return ;
+    }
+	if ( edge_array[edgeno].multi >= 255 || edge_array[edgeno].deleted == 1)
 	{
 		return;
 	}
 
-	unsigned int bal_ed = getTwinEdge ( edgeno );
 	unsigned char counter = edge_array[edgeno].multi++;
 	edge_array[edgeno].markers[counter] = readid;
+    if( EdSameAsTwin( edgeno ) )
+        return ;
+	unsigned int bal_ed = getTwinEdge ( edgeno );
 	counter = edge_array[bal_ed].multi++;
 	edge_array[bal_ed].markers[counter] = -readid;
 }
