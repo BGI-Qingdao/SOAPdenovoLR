@@ -43,19 +43,20 @@ void output_graph ( char * outfile )
 		{
 			continue;
 		}
+        unsigned int j = flag_array[i];
 
 		/*
 		   arcCount(i,&arcNum);
 		   if(arcNum<1)
 		   continue;
 		 */
-		bal_i = getTwinEdge ( i );
+		bal_i = getTwinEdge ( j );
 		/*
 		   arcCount(bal_i,&arcNum);
 		   if(arcNum<1)
 		   continue;
 		 */
-		fprintf ( fp, "\tV%d -> V%d[label =\"%d(%d)\"];\n", edge_array[i].from_vt, edge_array[i].to_vt, i, edge_array[i].length );
+		fprintf ( fp, "\tV%d -> V%d[label =\"%d(%d)\"];\n", edge_array[j].from_vt, edge_array[j].to_vt, i, edge_array[j].length );
 	}
 
 	fprintf ( fp, "}\n" );
@@ -282,7 +283,7 @@ void output_contig ( EDGE * ed_array, unsigned int ed_num, char * outfile, int c
 			i++;
 		}
 	}
-
+    output_graph(outfile);
 	fclose ( fp );
 	free ( ( void * ) kmerSeq );
 	free ( ( void * ) length_array );
