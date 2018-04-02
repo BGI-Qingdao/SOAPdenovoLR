@@ -40,7 +40,7 @@
 
 #include "sam.h"
 #include "errno.h"
-
+#include "zlib.h"
 
 
 
@@ -293,7 +293,8 @@ void *run_io_thread_main ( void *arg )
   int read_num1 = 0;
   char line[1024];
   int read_buf_len = 1024;
-  FILE *fp = NULL;  //for normal and gzip reading
+  FILE *fp = NULL;  //for normal;
+  gzFile fp_gz = NULL;//and gzip reading
   samfile_t *fp3 = NULL;  //for bam reading
   int filetype = 0; //0 normal 1 gzip 2 bam
   int file_num = 0;
@@ -319,7 +320,7 @@ void *run_io_thread_main ( void *arg )
               //temp = "gzip -dc ";
               //temp.append(in_filenames_vt[file_num]);
               //fp = popen(temp.c_str(),"r");
-              fp = ( FILE * ) open_file_robust ( "gz", in_filenames_vt[file_num].c_str(), "r" );
+              fp_gz = ( gzFile ) open_file_robust ( "gz", in_filenames_vt[file_num].c_str(), "rb" );
               filetype = 1;
             }
           else if ( temp.compare ( ".bam" ) == 0 ) //bam
@@ -336,7 +337,7 @@ void *run_io_thread_main ( void *arg )
             }
         }
 
-      if ( !fp && !fp3 )
+      if ( !fp && !fp3 && !fp_gz)
         {
           fprintf ( stderr, "ERROR: can't open file %s \n", in_filenames_vt[file_num].c_str() );
           exit ( 1 );
@@ -368,7 +369,17 @@ void *run_io_thread_main ( void *arg )
             {
               while ( i < read_buf_sz )
                 {
-                  if ( fgets ( line, read_buf_len, fp ) != NULL )
+                    char * ret = NULL ;
+                    if( filetype == 0 )
+                    {
+                        ret = fgets ( line, read_buf_len, fp );
+                    }
+                    else
+                    {
+                        ret = gzgets (fp_gz, line, read_buf_len);
+                    }
+                    if( ret != NULL )
+                    //if ( fgets ( line, read_buf_len, fp ) != NULL )
                     {
                       switch ( line[0] )
                         {
@@ -444,7 +455,9 @@ void *run_io_thread_main ( void *arg )
                 }
               else if ( filetype == 1 )
                 {
-                  pclose ( fp );
+                  //pclose ( fp );
+                  gzclose(fp_gz);
+                  fp_gz = NULL ;
                 }
               else if ( filetype == 2 )
                 {
@@ -474,7 +487,7 @@ void *run_io_thread_main ( void *arg )
                       //temp = "gzip -dc ";
                       //temp.append(in_filenames_vt[file_num]);
                       //fp = popen(temp.c_str(),"r");
-                      fp = ( FILE * ) open_file_robust ( "gz", in_filenames_vt[file_num].c_str(), "r" );
+                      fp_gz = ( gzFile ) open_file_robust ( "gz", in_filenames_vt[file_num].c_str(), "rb" );
                       filetype = 1;
                     }
                   else if ( temp.compare ( ".bam" ) == 0 ) //bam
@@ -491,7 +504,7 @@ void *run_io_thread_main ( void *arg )
                     }
                 }
 
-              if ( !fp && !fp3 )
+              if ( !fp && !fp3 && !fp_gz)
                 {
                   fprintf ( stderr, "ERROR: can't open file %s \n", in_filenames_vt[file_num].c_str() );
                   exit ( 1 );
@@ -519,7 +532,9 @@ void *run_io_thread_main ( void *arg )
                 }
               else if ( filetype == 1 )
                 {
-                  pclose ( fp );
+                  //pclose ( fp );
+                  gzclose(fp_gz);
+                  fp_gz = NULL ;
                 }
               else if ( filetype == 2 )
                 {
@@ -543,9 +558,19 @@ void *run_io_thread_main ( void *arg )
 
           if ( filetype == 0 || filetype == 1 ) //normal or gzip reading ...
             {
-              while ( i < read_buf_sz && fp )
+              while ( i < read_buf_sz && ( fp ||fp_gz) )
                 {
-                  if ( fgets ( line, read_buf_len, fp ) != NULL )
+                    char * ret = NULL ;
+                    if( filetype == 0 )
+                    {
+                        ret = fgets ( line, read_buf_len, fp );
+                    }
+                    else
+                    {
+                        ret = gzgets ( fp_gz,line, read_buf_len);
+                    }
+                    if ( ret != NULL )
+                    //if ( fgets ( line, read_buf_len, fp ) != NULL )
                     {
                       switch ( line[0] )
                         {
@@ -605,7 +630,7 @@ void *run_io_thread_main ( void *arg )
               usleep ( 1 );
             }; //wait for main send work sign
 
-          if ( i == read_buf_sz && ( fp || fp3 ) )
+          if ( i == read_buf_sz && ( fp || fp3 || fp_gz) )
             {
               io_stat1 = 2;
             }
@@ -619,7 +644,9 @@ void *run_io_thread_main ( void *arg )
                 }
               else if ( filetype == 1 )
                 {
-                  pclose ( fp );
+                  //pclose ( fp );
+                  gzclose(fp_gz);
+                  fp_gz = NULL ;
                 }
               else if ( filetype == 2 )
                 {
@@ -649,7 +676,7 @@ void *run_io_thread_main ( void *arg )
                       //temp = "gzip -dc ";
                       //temp.append(in_filenames_vt[file_num]);
                       //fp = popen(temp.c_str(),"r");
-                      fp = ( FILE * ) open_file_robust ( "gz", in_filenames_vt[file_num].c_str(), "r" );
+                      fp_gz = ( gzFile ) open_file_robust ( "gz", in_filenames_vt[file_num].c_str(), "rb" );
                       filetype = 1;
                     }
                   else if ( temp.compare ( ".bam" ) == 0 ) //bam
@@ -666,7 +693,7 @@ void *run_io_thread_main ( void *arg )
                     }
                 }
 
-              if ( !fp && !fp3 )
+              if ( !fp && !fp3 && !fp_gz)
                 {
                   fprintf ( stderr, "ERRPR: can't open file %s \n", in_filenames_vt[file_num].c_str() );
                   exit ( 1 );
@@ -692,7 +719,9 @@ void *run_io_thread_main ( void *arg )
                 }
               else if ( filetype == 1 )
                 {
-                  pclose ( fp );
+                  //pclose ( fp );
+                  gzclose(fp_gz);
+                  fp_gz = NULL ;
                 }
               else if ( filetype == 2 )
                 {
@@ -924,12 +953,13 @@ void *open_file_robust ( const char *filetype, const char *path, const char *mod
         }
       else if ( strcmp ( filetype, "gz" ) == 0 )
         {
-          char tmp[256];
-          sprintf ( tmp, "gzip -dc %s", path );
+          //char tmp[256];
+          //sprintf ( tmp, "gzip -dc %s", path );
 
           if ( access ( path, 0 ) == 0 )
             {
-              fp = popen ( tmp, "r" );
+              fp = gzopen(path,mode);
+              //fp = popen ( tmp, "r" );
               /*
               if(fp && feof((FILE*)fp)){ //it's useless for "file not found but popen success"  bug
                   pclose((FILE*)fp);
