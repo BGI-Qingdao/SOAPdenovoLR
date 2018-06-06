@@ -25,7 +25,7 @@
 #include "kmerhash.h"
 #include <extfunc.h>
 #include <extvab.h>
-
+#include "BUFFSIZE.h"
 #define preARCBLOCKSIZE 100000
 #ifdef MER127
 static const Kmer kmerZero = { 0, 0, 0, 0 };
@@ -1409,7 +1409,6 @@ void prlRead2edge ( char * libfile, char * outfile )
 	flagArray = ( boolean * ) ckalloc ( buffer_size * sizeof ( boolean ) );
 	maxReadNum = buffer_size / ( maxReadLen - overlaplen + 1 );
 	//printf("buffer for at most %d reads\n",maxReadNum);
-	int maxAIOSize = 32768;
 	aioBuffer1 = ( char * ) ckalloc ( ( maxAIOSize ) * sizeof ( char ) );
 	aioBuffer2 = ( char * ) ckalloc ( ( maxAIOSize ) * sizeof ( char ) );
 	readBuffer1 = ( char * ) ckalloc ( ( maxAIOSize + ( maxReadLen * 4 + 1024 ) ) * sizeof ( char ) ); //(char *)ckalloc(maxAIOSize*sizeof(char)); //1024

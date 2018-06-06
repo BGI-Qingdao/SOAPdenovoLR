@@ -25,7 +25,7 @@
 #include "kmerhash.h"
 #include "extfunc.h"
 #include "extvab.h"
-
+#include "BUFFSIZE.h"
 //debugging variables
 static long long * tips;
 static long long * kmerCounter; //kmer number for each KmerSet[thread id]
@@ -342,7 +342,6 @@ boolean prlRead2HashTable ( char * libfile, char * outfile )
 	nextcBuffer = ( char * ) ckalloc ( buffer_size * sizeof ( char ) );
 	maxReadNum = buffer_size / ( maxReadLen - overlaplen + 1 );
 	//printf("buffer size %d, max read len %d, max read num %d\n",buffer_size,maxReadLen,maxReadNum);
-	int maxAIOSize = 32768;
 	aioBuffer1 = ( char * ) ckalloc ( ( maxAIOSize ) * sizeof ( char ) );
 	aioBuffer2 = ( char * ) ckalloc ( ( maxAIOSize ) * sizeof ( char ) );
 	readBuffer1 = ( char * ) ckalloc ( ( maxAIOSize + ( maxReadLen * 4 + 1024 ) ) * sizeof ( char ) ); //(char *)ckalloc(maxAIOSize*sizeof(char)); //1024
@@ -770,7 +769,7 @@ int AIORead ( struct aiocb * mycb, int * offset, char * buf, char * cach, int * 
 				{
 					char * temp = ( char * ) ( ( *mycb ).aio_buf );
 
-					if ( ( get % 32768 ) != 0 )
+					if ( ( get % minAIOSize ) != 0 )
 					{
 						strcpy ( buf, cach );
 						memcpy ( &buf[j], temp, get );
