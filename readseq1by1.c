@@ -166,7 +166,7 @@ void readseqInBuf ( char * src_seq, char * src_name, int * len_seq, char * buf, 
 			memcpy ( src_name, &buf[p + 1], m - p - 1 ); //get name
 			p = m;
 		}
-		else if ( buf[m] == '\n' && buf[p] == '\n' )
+		else if ( ( buf[m] == '\n' ||( m == offset -1 )) && buf[p] == '\n' )
 		{
 			memcpy ( str, &buf[p + 1], m - p - 1 ); //get seq
 			//p = m;
