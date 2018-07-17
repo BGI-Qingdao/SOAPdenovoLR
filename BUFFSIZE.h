@@ -1,4 +1,4 @@
 
 #define  minAIOSize  32768
-#define  maxAIOSize  (minAIOSize * 2) 
+#define  maxAIOSize  (minAIOSize) 
 
